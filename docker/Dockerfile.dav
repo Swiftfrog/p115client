@@ -1,0 +1,40 @@
+# --- Stage 1: Base Image ---
+FROM python:3.13-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115dav"
+
+# --- Environment Variables ---
+# 防止生成 .pyc 文件并关闭 Python 输出缓冲
+# 配置时区，确保容器内日志输出的时间与本地一致
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    TZ=Asia/Shanghai
+
+# Set the working directory
+WORKDIR /app
+
+# --- Application Code ---
+# 复制必需的项目文件
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+COPY modules/p115dav /app/modules/p115dav
+
+# 安装本地模块及远程依赖
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115dav/ \
+    "httpcore[asyncio]"
+
+# Expose default port
+EXPOSE 8000
+
+# --- Default Command ---
+CMD ["p115dav", "-H", "0.0.0.0", "-P", "8000"]

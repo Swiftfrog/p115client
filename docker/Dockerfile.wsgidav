@@ -1,0 +1,42 @@
+# --- Stage 1: Base Image ---
+# 使用 Python 3.13-slim 保持与你 dav 版本一致
+FROM python:3.13-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115wsgidav with local fixes"
+
+# --- Environment Variables ---
+WORKDIR /app
+
+# 防止生成 .pyc 文件，确保日志实时输出
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# --- Application Code ---
+# 将整个仓库（包含修复后的 p115client 源码）拷贝进镜像
+COPY . /app/
+
+# --- Dependency & Application Installation ---
+# 1. 安装你本地修复好的 p115client 核心库及其本地依赖
+# 2. 安装 p115wsgidav 模块（路径假设在 modules/p115wsgidav）
+# 3. 补全 wsgidav 运行所需的服务器引擎 cheroot 和其他必要依赖
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115wsgidav/ \
+    cheroot \
+    wsgidav \
+    cachedict \
+    yarl \
+    PyYAML
+
+# 暴露 p115wsgidav 默认使用的端口 8115
+EXPOSE 8115
+
+# --- Default Command ---
+# 默认监听 0.0.0.0 以解决 Docker 容器访问隔离问题
+# 默认指向 /app/115-cookies.txt，你可以通过 compose 挂载此文件
+CMD ["p115wsgidav", "-H", "0.0.0.0", "-P", "8115", "-cp", "/app/115-cookies.txt"]

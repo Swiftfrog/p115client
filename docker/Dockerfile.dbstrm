@@ -1,0 +1,51 @@
+# --- Stage 1: Base Image ---
+# 使用一个官方的、轻量级的 Python 3.11 镜像作为基础
+FROM python:3.13-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115updatedb and generate STRM files."
+
+# --- Environment Variables ---
+# 设置工作目录
+WORKDIR /app
+
+# 防止 Python 写入 .pyc 文件，并设置无缓冲输出，便于在 Docker 日志中查看
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# --- System Dependencies ---
+# 安装 curl (用于 Emby 扫描) 和其他可能需要的工具
+# 清理 apt 缓存以保持镜像体积小
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
+# --- Application Code ---
+# 复制整个仓库的代码到工作目录中，以便本地编译和运行
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+COPY modules/p115updatedb /app/modules/p115updatedb
+
+COPY scripts/generate_strm.py /app/
+COPY scripts/entrypoint_dbstrm.sh /app/entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+# 安装项目本身的本地代码 (p115client、各个本地模块和 p115updatedb)
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115updatedb/ \
+    requests
+
+# --- Entrypoint ---
+# 设置容器的入口点为我们的脚本
+ENTRYPOINT ["./entrypoint.sh"]
+
+# --- Default Command ---
+# 当容器运行时，默认执行 entrypoint.sh 的主工作流
+# 如果在 `docker run` 或 `compose.yaml` 中提供了其他命令，则会覆盖它
+CMD []

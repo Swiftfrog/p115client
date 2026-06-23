@@ -1,0 +1,33 @@
+# 使用轻量级 Python 基础镜像
+FROM python:3.13-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 设置环境变量，防止 Python 缓冲 stdout 和 stderr
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HOME=/tmp
+
+# 安装 p115client 及其本地依赖
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/
+
+# 将代码复制进容器
+COPY scripts/cookies.py .
+
+# 设置默认的环境变量 (运行时可通过 docker run 或 docker-compose 覆盖)
+ENV CONFIG_DIR="/cookies"
+ENV APP_NAME="qandriod"
+
+# 执行脚本
+CMD ["python", "cookies.py"]

@@ -1,0 +1,41 @@
+# --- Stage 1: Base Image ---
+FROM python:3.13-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115up"
+
+# --- Environment Variables ---
+# Set the working directory
+WORKDIR /app
+
+# Prevent Python from writing .pyc files and set output unbuffered
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# --- Application Code ---
+# Copy the entire repository code to the working directory for local build
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+
+# Ensure all copied files and directories are readable by all users (fix PermissionError)
+RUN chmod -R a+rX /app
+
+# Install the project's local code (p115client, its dependencies, and p115up)
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    requests tqdm
+
+# Clean up source code directories to avoid import shadow issues and save space
+RUN rm -rf /app/p115client /app/modules
+
+COPY scripts/p115up.py .
+
+# --- Default Command ---
+CMD ["python", "-u", "p115up.py"]

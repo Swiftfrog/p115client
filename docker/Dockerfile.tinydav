@@ -1,0 +1,34 @@
+# --- Stage 1: Base Image ---
+# p115tinydav requires python >= 3.12
+FROM python:3.12-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115tinydav"
+
+# --- Environment Variables ---
+# Set the working directory
+WORKDIR /app
+
+# Prevent Python from writing .pyc files and set output unbuffered
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# --- Application Code ---
+# Copy the entire repository code to the working directory for local build
+COPY . /app/
+
+# Install the project's local code (p115client, its dependencies, and p115tinydav)
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115tinydav/ \
+    "httpcore[asyncio]"
+
+# Expose default port
+EXPOSE 8000
+
+# --- Default Command ---
+CMD ["p115tinydav", "-H", "0.0.0.0", "-P", "8000"]

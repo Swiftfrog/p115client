@@ -1,0 +1,31 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# 将整个项目代码拷贝入镜像
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+COPY modules/p115updatedb /app/modules/p115updatedb
+
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 同时指定本地的 p115client 根目录、各个本地模块和 p115updatedb 目录进行依赖安装。
+# 这样 pip 会探测到本地的打包并使用，从而防止从 PyPI 拉取旧/新版本。
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115updatedb/
+
+# 将数据目录设置为工作目录，方便后续映射
+WORKDIR /data
+
+#在 Dockerfile 中全局指定 HOME 环境变量
+ENV HOME=/data
+
+ENTRYPOINT ["p115updatedb"]

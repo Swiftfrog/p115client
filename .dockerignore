@@ -1,0 +1,15 @@
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.db-shm
+*.db-wal
+data/
+output/
+venv/
+.env
+115-cookies.txt
+docs/
+examples/

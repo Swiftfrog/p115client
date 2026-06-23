@@ -1,0 +1,36 @@
+#Dockerfile.syncoplist
+
+FROM python:3.13-slim
+
+# 安装必要的系统工具（如果 Python 脚本或 shell 脚本需要）
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 拷贝项目文件和本地依赖模块
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+COPY modules/p115updatedb /app/modules/p115updatedb
+
+# 拷贝功能脚本
+COPY scripts/sync_openlist.py /app/
+COPY scripts/entrypoint_syncoplist.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# 安装本地模块及依赖
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115updatedb/
+
+# 保持 /data 为工作目录，方便 command 中的相对路径解析
+WORKDIR /data
+
+ENTRYPOINT ["/app/entrypoint.sh"]

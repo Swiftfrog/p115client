@@ -1,0 +1,32 @@
+# --- Stage 1: Base Image ---
+FROM python:3.13-slim
+
+# --- Metadata ---
+LABEL maintainer="albert"
+LABEL description="A Docker image to run p115nano302"
+
+# Set the working directory
+WORKDIR /app
+
+# Prevent Python from writing .pyc files and set output unbuffered
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Application Code
+COPY pyproject.toml readme.md /app/
+COPY p115client /app/p115client
+COPY modules/p115oss /app/modules/p115oss
+COPY modules/p115cipher /app/modules/p115cipher
+COPY modules/p115pickcode /app/modules/p115pickcode
+COPY modules/p115nano302 /app/modules/p115nano302
+
+RUN pip install --no-cache-dir \
+    /app/modules/p115cipher/ \
+    /app/modules/p115pickcode/ \
+    /app/modules/p115oss/ \
+    /app/ \
+    /app/modules/p115nano302/ \
+    errno2
+
+ENTRYPOINT ["p115nano302"]
+
