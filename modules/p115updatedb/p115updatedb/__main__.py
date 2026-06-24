@@ -57,10 +57,9 @@ def main(argv: None | list[str] | Namespace = None, /):
         cookies = Path(cookies_path)
     else:
         cookies = Path("115-cookies.txt")
-    # P115Client >= 0.0.9 removed ensure_cookies. Authentication failures are
-    # surfaced by the first API request, which is preferable for unattended
-    # container jobs because they cannot complete an interactive relogin.
-    client = P115Client(cookies, app="alipaymini")
+    # Authentication failures are surfaced by the first API request. An
+    # unattended container must not implicitly enter an interactive login flow.
+    client = P115Client(cookies)
     updatedb(
         client, 
         dbfile=args.dbfile, 
