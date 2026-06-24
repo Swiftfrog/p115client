@@ -216,7 +216,16 @@ def iterdir(
     ancestors: list[dict] = []
     def iterate():
         nonlocal count
-        payload = {"asc": 0, "cid": cid, "show_dir": int(show_dir), "o": "user_utime", "fc_mix": 1}
+        # p115client >= 0.0.8.9.x defaults to cur=1 (current directory only).
+        # Tree synchronization must explicitly request descendants with cur=0.
+        payload = {
+            "asc": 0,
+            "cid": cid,
+            "cur": int(show_dir),
+            "show_dir": int(show_dir),
+            "o": "user_utime",
+            "fc_mix": 1,
+        }
         if cooldown:
             it = iter_fs_files_threaded(
                 client, 
@@ -741,7 +750,17 @@ def updatedb(
                     check_response(resp)
                     if int(resp["data"][0]["aid"]) != 1:
                         raise FileNotFoundError
-                upserted, removed = updatedb_tree(client, con, id, refresh=refresh, no_dir_moved=no_dir_moved, **request_kwargs)
+                # Preserve the preflight count so an unexpectedly empty tree
+                # enumeration cannot be silently accepted as a successful sync.
+                upserted, removed = updatedb_tree(
+                    client,
+                    con,
+                    id,
+                    count=count,
+                    refresh=refresh,
+                    no_dir_moved=no_dir_moved,
+                    **request_kwargs,
+                )
         except FileNotFoundError:
             kill_items(con, id, commit=True)
             if logger is not None:
@@ -810,4 +829,3 @@ def iter_fs_event(
 
 
 # TODO: 对以上这些数据库进行挑拣和优化，以后将合并到 p115client
-
