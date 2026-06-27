@@ -8,8 +8,7 @@ from collections.abc import Buffer, Callable, Coroutine
 from hashlib import sha1
 from inspect import isawaitable
 from os import fsdecode, fstat, stat, PathLike
-from re import compile as re_compile
-from typing import cast, overload, Any, Final, Literal
+from typing import cast, overload, Any, Literal
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -24,12 +23,9 @@ from yarl import URL
 
 from .api import upload_init, upload_init_open, upload_resume
 from .oss import (
-    DEFAULT_BUCKET, DEFAULT_ENDPOINT, oss_multipart_part_iter, oss_upload, 
-    oss_multipart_upload_init, oss_multipart_upload, oss_multipart_upload_complete, 
+    DEFAULT_BUCKET, DEFAULT_ENDPOINT, oss_multipart_part_iter, oss_upload,
+    oss_multipart_upload_init, oss_multipart_upload, oss_multipart_upload_complete,
 )
-
-
-CRE_UID_in_COOKIE_search: Final = re_compile(r"(?<=\bUID=)\w+").search
 
 
 class MultipartUploadAbort(OSError):
@@ -37,25 +33,25 @@ class MultipartUploadAbort(OSError):
 
 
 def urlopen(
-    url: str, 
-    /, 
-    bytes_range: str = "", 
-    async_: bool = False, 
+    url: str,
+    /,
+    bytes_range: str = "",
+    async_: bool = False,
 ):
     from urllib3_future_request import request
     headers: dict = {"accept-encoding": "identity"}
     if bytes_range:
         headers["range"] = "bytes=" + bytes_range
     return request(
-        url, 
-        headers=headers, 
+        url,
+        headers=headers,
         async_=async_, # type: ignore
     )
 
 
 def determine_partsize(
-    size: int, 
-    max_part_count: int = 10 ** 4, 
+    size: int,
+    max_part_count: int = 10 ** 4,
 ) -> int:
     """确定分片上传（multipart upload）时的分片大小
 
@@ -80,43 +76,43 @@ def determine_partsize(
 
 @overload
 def upload_file_init(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    *, 
-    async_: Literal[False] = False, 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    *,
+    async_: Literal[False] = False,
+    **request_kwargs,
 ) -> dict:
     ...
 @overload
 def upload_file_init(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    *, 
-    async_: Literal[True], 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    *,
+    async_: Literal[True],
+    **request_kwargs,
 ) -> Coroutine[Any, Any, dict]:
     ...
 def upload_file_init(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    *, 
-    async_: Literal[False, True] = False, 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    *,
+    async_: Literal[False, True] = False,
+    **request_kwargs,
 ) -> dict | Coroutine[Any, Any, dict]:
     """准备分块上传，获取必要信息
 
@@ -288,27 +284,27 @@ def upload_file_init(
         else:
             target = f"U_1_{pid or 0}"
         upload_data.update(
-            filename=filename, 
-            filesha1=filesha1, 
-            filesize=filesize, 
-            target=target, 
+            filename=filename,
+            filesha1=filesha1,
+            filesize=filesize,
+            target=target,
         )
         if use_open:
             payload = {
-                "fileid": filesha1, 
-                "file_name": filename, 
-                "file_size": filesize, 
-                "target": target, 
+                "fileid": filesha1,
+                "file_name": filename,
+                "file_size": filesize,
+                "target": target,
             }
             do_upload_init = upload_init_open
         else:
             payload = {
-                "fileid": filesha1, 
-                "filename": filename, 
-                "filesize": filesize, 
-                "target": target, 
-                "userid": user_id, 
-                "userkey": user_key, 
+                "fileid": filesha1,
+                "filename": filename,
+                "filesize": filesize,
+                "target": target,
+                "userid": user_id,
+                "userkey": user_key,
             }
             do_upload_init = upload_init
         resp = data = yield do_upload_init(payload, async_=async_, **request_kwargs)
@@ -364,64 +360,64 @@ def upload_file_init(
 
 @overload
 def upload_file(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    partsize: int = 0, 
-    callback: None | str | dict = None, 
-    upload_id: str = "", 
-    token: None | dict = None, 
-    bucket: str = DEFAULT_BUCKET, 
-    endpoint: str = DEFAULT_ENDPOINT, 
-    reporthook: None | Callable[[int], Any] = None, 
-    *, 
-    async_: Literal[False] = False, 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    partsize: int = 0,
+    callback: None | str | dict = None,
+    upload_id: str = "",
+    token: None | dict = None,
+    bucket: str = DEFAULT_BUCKET,
+    endpoint: str = DEFAULT_ENDPOINT,
+    reporthook: None | Callable[[int], Any] = None,
+    *,
+    async_: Literal[False] = False,
+    **request_kwargs,
 ) -> dict:
     ...
 @overload
 def upload_file(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    partsize: int = 0, 
-    callback: None | str | dict = None, 
-    upload_id: str = "", 
-    token: None | dict = None, 
-    bucket: str = DEFAULT_BUCKET, 
-    endpoint: str = DEFAULT_ENDPOINT, 
-    reporthook: None | Callable[[int], Any] = None, 
-    *, 
-    async_: Literal[True], 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    partsize: int = 0,
+    callback: None | str | dict = None,
+    upload_id: str = "",
+    token: None | dict = None,
+    bucket: str = DEFAULT_BUCKET,
+    endpoint: str = DEFAULT_ENDPOINT,
+    reporthook: None | Callable[[int], Any] = None,
+    *,
+    async_: Literal[True],
+    **request_kwargs,
 ) -> Coroutine[Any, Any, dict]:
     ...
 def upload_file(
-    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-    pid: int | str = 0, 
-    filename: str = "", 
-    filesha1: str = "", 
-    filesize: int = -1, 
-    user_id: int | str = "", 
-    user_key: str = "", 
-    partsize: int = 0, 
-    callback: None | str | dict = None, 
-    upload_id: str = "", 
-    token: None | dict = None, 
-    bucket: str = DEFAULT_BUCKET, 
-    endpoint: str = DEFAULT_ENDPOINT, 
-    reporthook: None | Callable[[int], Any] = None, 
-    *, 
-    async_: Literal[False, True] = False, 
-    **request_kwargs, 
+    file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+    pid: int | str = 0,
+    filename: str = "",
+    filesha1: str = "",
+    filesize: int = -1,
+    user_id: int | str = "",
+    user_key: str = "",
+    partsize: int = 0,
+    callback: None | str | dict = None,
+    upload_id: str = "",
+    token: None | dict = None,
+    bucket: str = DEFAULT_BUCKET,
+    endpoint: str = DEFAULT_ENDPOINT,
+    reporthook: None | Callable[[int], Any] = None,
+    *,
+    async_: Literal[False, True] = False,
+    **request_kwargs,
 ) -> dict | Coroutine[Any, Any, dict]:
     """上传文件
 
@@ -460,9 +456,9 @@ def upload_file(
                 else:
                     params = callback
                 resp = yield upload_resume(
-                    params, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    params,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 key = resp["object"]
                 if not resp.get("state", True):
@@ -470,16 +466,16 @@ def upload_file(
                 callback = cast(dict, resp["callback"])
                 if upload_id:
                     yield foreach(
-                        parts.append, 
+                        parts.append,
                         oss_multipart_part_iter(
-                            key, 
-                            upload_id=upload_id, 
-                            token=token, 
-                            bucket=bucket, 
-                            endpoint=endpoint, 
-                            async_=async_, 
-                            **request_kwargs, 
-                        ), 
+                            key,
+                            upload_id=upload_id,
+                            token=token,
+                            bucket=bucket,
+                            endpoint=endpoint,
+                            async_=async_,
+                            **request_kwargs,
+                        ),
                     )
                     skip_size = sum(p["Size"] for p in parts if p["Size"] >= 1024 * 100)
                     if filesize >= 0:
@@ -496,15 +492,15 @@ def upload_file(
             else:
                 upload_id = ""
                 resp = yield upload_file_init(
-                    file=file, 
-                    pid=pid, 
-                    filename=filename, 
-                    filesha1=filesha1, 
-                    filesize=filesize, 
-                    user_id=user_id, 
-                    user_key=user_key, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    file=file,
+                    pid=pid,
+                    filename=filename,
+                    filesha1=filesha1,
+                    filesize=filesize,
+                    user_id=user_id,
+                    user_key=user_key,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 if not resp["state"] or resp["reuse"]:
                     return resp
@@ -546,25 +542,25 @@ def upload_file(
                             file = open(path, "rb")
                     file = cast(Buffer | SupportsRead, file)
                     return oss_upload(
-                        key, 
-                        file, 
-                        callback=callback, 
-                        token=token, 
-                        bucket=bucket, 
-                        endpoint=endpoint, 
-                        reporthook=reporthook, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        key,
+                        file,
+                        callback=callback,
+                        token=token,
+                        bucket=bucket,
+                        endpoint=endpoint,
+                        reporthook=reporthook,
+                        async_=async_,
+                        **request_kwargs,
                     )
             if not upload_id or filesize < 0 or skip_size < filesize:
                 if not upload_id:
                     upload_id = yield oss_multipart_upload_init(
-                        key, 
-                        token, 
-                        bucket=bucket, 
-                        endpoint=endpoint, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        key,
+                        token,
+                        bucket=bucket,
+                        endpoint=endpoint,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 if isinstance(file, SupportsRead):
                     if skip_size:
@@ -601,36 +597,36 @@ def upload_file(
                             file.seek(skip_size)
                 file = cast(Buffer | SupportsRead, file)
                 return oss_multipart_upload(
-                    key, 
-                    upload_id=upload_id, 
-                    file=file, 
-                    callback=callback, 
-                    partsize=partsize, 
-                    parts=parts, 
-                    token=token, 
-                    bucket=bucket, 
-                    endpoint=endpoint, 
-                    reporthook=reporthook, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    key,
+                    upload_id=upload_id,
+                    file=file,
+                    callback=callback,
+                    partsize=partsize,
+                    parts=parts,
+                    token=token,
+                    bucket=bucket,
+                    endpoint=endpoint,
+                    reporthook=reporthook,
+                    async_=async_,
+                    **request_kwargs,
                 )
             else:
                 return oss_multipart_upload_complete(
-                    key, 
-                    upload_id=upload_id, 
-                    parts=parts, 
-                    callback=callback, 
-                    token=token, 
-                    bucket=bucket, 
-                    endpoint=endpoint, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    key,
+                    upload_id=upload_id,
+                    parts=parts,
+                    callback=callback,
+                    token=token,
+                    bucket=bucket,
+                    endpoint=endpoint,
+                    async_=async_,
+                    **request_kwargs,
                 )
         except BaseException as e:
             data = locals()
             raise MultipartUploadAbort({k: data[k] for k in (
-                "pid", "filename", "filesha1", "filesize", "user_id", 
-                "user_key", "partsize", "callback", "upload_id", 
+                "pid", "filename", "filesha1", "filesize", "user_id",
+                "user_key", "partsize", "callback", "upload_id",
             )}) from e
     return run_gen_step(gen_step, async_)
 

@@ -10,8 +10,8 @@ from asyncio import Lock as AsyncLock
 from base64 import b64encode
 from collections import UserString
 from collections.abc import (
-    AsyncIterable, Awaitable, Buffer, Callable, Coroutine, 
-    Iterable, Iterator, Mapping, MutableMapping, Sequence, 
+    AsyncIterable, Awaitable, Buffer, Callable, Coroutine,
+    Iterable, Iterator, Mapping, MutableMapping, Sequence,
 )
 from datetime import date, datetime, timedelta
 from hashlib import md5, sha1
@@ -33,7 +33,7 @@ from warnings import warn
 from asynctools import ensure_async
 from cookietools import cookies_to_dict, update_cookies
 from dicttools import (
-    get_first, dict_update, dict_key_to_lower_merge, iter_items, KeyLowerDict, 
+    get_first, dict_update, dict_key_to_lower_merge, iter_items, KeyLowerDict,
 )
 from ensure import ensure_bytes
 from errno2 import errno
@@ -44,8 +44,8 @@ from httpfile import HTTPFileReader, AsyncHTTPFileReader
 from iterutils import run_gen_step
 from orjson import dumps, loads
 from p115cipher import (
-    rsa_encrypt, rsa_decrypt, ecdh_aes_encrypt, ecdh_aes_decrypt, 
-    ecdh_encode_token, make_upload_payload, 
+    rsa_encrypt, rsa_decrypt, ecdh_aes_encrypt, ecdh_aes_decrypt,
+    ecdh_encode_token, make_upload_payload,
 )
 from p115oss import upload_file
 from p115pickcode import to_id, to_pickcode
@@ -54,13 +54,13 @@ from temporary import temp_globals
 from yarl import URL
 
 from .const import (
-    CLIENT_API_METHODS_MAP, CLIENT_METHOD_API_MAP, 
-    SSOENT_TO_APP, 
+    CLIENT_API_METHODS_MAP, CLIENT_METHOD_API_MAP,
+    SSOENT_TO_APP,
 )
 from .exception import (
-    throw, P115OSError, P115Warning, P115AccessTokenError, 
-    P115AuthenticationError, P115LoginError, P115OpenAppAuthLimitExceeded, 
-    P115OperationalError, 
+    throw, P115OSError, P115Warning, P115AccessTokenError,
+    P115AuthenticationError, P115LoginError, P115OpenAppAuthLimitExceeded,
+    P115OperationalError,
 )
 from .type import P115Cookies, P115URL
 from .util import complete_url, share_extract_payload
@@ -92,13 +92,13 @@ def json_decrypt_parse(_, content: Buffer, /):
 
 
 def get_request(
-    url: str, 
-    method: str = "GET", 
-    payload: Any = None, 
-    headers: Any = None, 
-    ecdh_encrypt: bool = False, 
-    request: None | Callable = None, 
-    **request_kwargs, 
+    url: str,
+    method: str = "GET",
+    payload: Any = None,
+    headers: Any = None,
+    ecdh_encrypt: bool = False,
+    request: None | Callable = None,
+    **request_kwargs,
 ) -> tuple[Callable, dict]:
     if request is None:
         from urllib3_future_request import request
@@ -109,8 +109,8 @@ def get_request(
         ecdh_encrypt = False
     if payload is not None:
         request_kwargs.setdefault(
-            "data" if method.upper() in ("POST", "PUT") else "params", 
-            payload, 
+            "data" if method.upper() in ("POST", "PUT") else "params",
+            payload,
         )
     params = request_kwargs.get("params")
     if isinstance(params, dict):
@@ -146,11 +146,11 @@ def parse_upload_init_response(_, content: bytes, /) -> dict:
 
 
 def expand_payload(
-    payload: dict[str, Any] | Iterable[tuple[str, Any]], 
-    prefix: str = "", 
-    enum_seq: bool | int = False, 
-    seq_types: type | tuple[type, ...] = (tuple, list), 
-    map_types: type | tuple[type, ...] = dict, 
+    payload: dict[str, Any] | Iterable[tuple[str, Any]],
+    prefix: str = "",
+    enum_seq: bool | int = False,
+    seq_types: type | tuple[type, ...] = (tuple, list),
+    map_types: type | tuple[type, ...] = dict,
 ) -> Iterable[tuple[str, Any]]:
     if prefix:
         prefix = f"{prefix}["
@@ -481,10 +481,10 @@ class ClientRequestMixin:
         """公用请求头
         """
         return KeyLowerDict[str, str]({
-            "accept": "*/*", 
-            "accept-encoding": "gzip, deflate, br, zstd", 
-            "connection": "keep-alive", 
-            "user-agent": "Mozilla/5.0", 
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "connection": "keep-alive",
+            "user-agent": "Mozilla/5.0",
         })
 
     @locked_cacheproperty
@@ -528,9 +528,9 @@ class ClientRequestMixin:
                 f.write(cookies_bytes)
 
     def update_cookies(
-        self, 
-        cookies: None | str | CookieJar | BaseCookie | Mapping[str, Any] | Iterable[Any] = None, 
-        /, 
+        self,
+        cookies: None | str | CookieJar | BaseCookie | Mapping[str, Any] | Iterable[Any] = None,
+        /,
     ):
         """更新 cookies（如果为 None 则是清空）
         """
@@ -544,16 +544,16 @@ class ClientRequestMixin:
                 self._write_cookies()
 
     def request(
-        self, 
-        /, 
-        url: str, 
-        method: str = "GET", 
-        payload: Any = None, 
-        *, 
-        ecdh_encrypt: bool = False, 
-        request: None | Callable = None, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        url: str,
+        method: str = "GET",
+        payload: Any = None,
+        *,
+        ecdh_encrypt: bool = False,
+        request: None | Callable = None,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ):
         """执行网络请求
 
@@ -589,7 +589,7 @@ class ClientRequestMixin:
 
         :return: 直接返回 `request` 执行请求后的返回值
 
-        .. note:: 
+        .. note::
             `request` 可以由不同的请求库来提供，下面是封装了一些模块
 
             1. `httpcore_request <https://pypi.org/project/httpcore_request/>`_，由 `httpcore <https://pypi.org/project/httpcore/>`_ 封装，支持同步和异步请求
@@ -685,13 +685,13 @@ class ClientRequestMixin:
         headers = self.headers.copy()
         headers.update(request_kwargs.pop("headers", None) or ())
         request, request_kwargs = get_request(
-            url=url, 
-            method=method, 
-            payload=payload, 
-            headers=headers, 
-            ecdh_encrypt=ecdh_encrypt, 
-            request=request, 
-            **request_kwargs, 
+            url=url,
+            method=method,
+            payload=payload,
+            headers=headers,
+            ecdh_encrypt=ecdh_encrypt,
+            request=request,
+            **request_kwargs,
         )
         headers = request_kwargs["headers"]
         if URL(url).path.startswith("/open/"):
@@ -732,14 +732,14 @@ class ClientRequestMixin:
         return request(async_=async_, **request_kwargs)
 
     def open(
-        self, 
-        url: str, 
-        /, 
-        start: int | str = 0, 
-        urlopen: None | Callable = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        url: str,
+        /,
+        start: int | str = 0,
+        urlopen: None | Callable = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ):
         """打开下载链接，返回响应对象
 
@@ -772,26 +772,26 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def app_area_list(
-        base_url: str | Callable[[], str] = "https://cdnres.115.com", 
-        *, 
-        async_: Literal[False] = False, 
+        base_url: str | Callable[[], str] = "https://cdnres.115.com",
+        *,
+        async_: Literal[False] = False,
         **request_kwargs
     ) -> dict:
         ...
     @overload
     @staticmethod
     def app_area_list(
-        base_url: str | Callable[[], str] = "https://cdnres.115.com", 
-        *, 
-        async_: Literal[True], 
+        base_url: str | Callable[[], str] = "https://cdnres.115.com",
+        *,
+        async_: Literal[True],
         **request_kwargs
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def app_area_list(
-        base_url: str | Callable[[], str] = "https://cdnres.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
+        base_url: str | Callable[[], str] = "https://cdnres.115.com",
+        *,
+        async_: Literal[False, True] = False,
         **request_kwargs
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取地区编码列表
@@ -822,27 +822,27 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def app_face_codes(
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def app_face_codes(
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def app_face_codes(
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取表情包
 
@@ -858,29 +858,29 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def app_publick_key(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False] = False,
         **request_kwargs
     ) -> dict:
         ...
     @overload
     @staticmethod
     def app_publick_key(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[True], 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[True],
         **request_kwargs
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def app_publick_key(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
         **request_kwargs
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 RSA 加密公钥，用于某些情况下的加密
@@ -911,26 +911,26 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def app_version_list(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[False] = False, 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[False] = False,
         **request_kwargs
     ) -> dict:
         ...
     @overload
     @staticmethod
     def app_version_list(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[True], 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[True],
         **request_kwargs
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def app_version_list(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[False, True] = False,
         **request_kwargs
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前各平台最新版 115 app 下载链接
@@ -944,26 +944,26 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def app_version_list2(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[False] = False, 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[False] = False,
         **request_kwargs
     ) -> dict:
         ...
     @overload
     @staticmethod
     def app_version_list2(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[True], 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[True],
         **request_kwargs
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def app_version_list2(
-        base_url: str | Callable[[], str] = "https://appversion.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
+        base_url: str | Callable[[], str] = "https://appversion.115.com",
+        *,
+        async_: Literal[False, True] = False,
         **request_kwargs
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前各平台最新版 115 app 下载链接
@@ -979,33 +979,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_authorize_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_authorize_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_authorize_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """授权码方式请求开放接口应用授权
 
@@ -1029,10 +1029,10 @@ class ClientRequestMixin:
         def parse(resp, content, /):
             if get_status_code(resp) == 302:
                 return {
-                    "state": True, 
-                    "url": resp.headers["location"], 
-                    "data": dict(parse_qsl(urlsplit(resp.headers["location"]).query)), 
-                    "headers": dict(resp.headers), 
+                    "state": True,
+                    "url": resp.headers["location"],
+                    "data": dict(parse_qsl(urlsplit(resp.headers["location"]).query)),
+                    "headers": dict(resp.headers),
                 }
             else:
                 return json_loads(content)
@@ -1044,33 +1044,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_authorize_access_token_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_authorize_access_token_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_authorize_access_token_open(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """用授权码获取开放接口应用的 access_token
 
@@ -1089,46 +1089,46 @@ class ClientRequestMixin:
         """
         api = complete_url("/open/authCodeToToken", base_url=base_url)
         request, request_kwargs = get_request(
-            url=api, 
-            method="POST", 
-            data={"grant_type": "authorization_code", **payload}, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data={"grant_type": "authorization_code", **payload},
+            **request_kwargs,
         )
         return request(async_=async_, **request_kwargs)
 
     @overload
     @staticmethod
     def login_qrcode(
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bytes:
         ...
     @overload
     @staticmethod
     def login_qrcode(
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bytes]:
         ...
     @staticmethod
     def login_qrcode(
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bytes | Coroutine[Any, Any, bytes]:
         """下载登录二维码图片
 
@@ -1148,33 +1148,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_qrcode_access_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_qrcode_access_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_qrcode_access_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """绑定扫码并获取开放平台应用的 access_token 和 refresh_token
 
@@ -1197,34 +1197,34 @@ class ClientRequestMixin:
 
     @overload
     def login_qrcode_scan(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_qrcode_scan(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_qrcode_scan(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """扫描二维码，payload 数据取自 `login_qrcode_token` 接口响应
 
@@ -1240,34 +1240,34 @@ class ClientRequestMixin:
 
     @overload
     def login_qrcode_scan_cancel(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_qrcode_scan_cancel(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_qrcode_scan_cancel(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """取消扫描二维码，payload 数据取自 `login_qrcode_scan` 接口响应
 
@@ -1285,34 +1285,34 @@ class ClientRequestMixin:
 
     @overload
     def login_qrcode_scan_confirm(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_qrcode_scan_confirm(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_qrcode_scan_confirm(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """确认扫描二维码，payload 数据取自 `login_qrcode_scan` 接口响应
 
@@ -1331,33 +1331,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_qrcode_scan_result(
-        uid: str, 
-        app: str = "alipaymini", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        uid: str,
+        app: str = "alipaymini",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_qrcode_scan_result(
-        uid: str, 
-        app: str = "alipaymini", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        uid: str,
+        app: str = "alipaymini",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_qrcode_scan_result(
-        uid: str, 
-        app: str = "alipaymini", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        uid: str,
+        app: str = "alipaymini",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取扫码登录的结果，包含 cookie
 
@@ -1398,33 +1398,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_qrcode_scan_status(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_qrcode_scan_status(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_qrcode_scan_status(
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取二维码的状态（未扫描、已扫描、已登录、已取消、已过期等），payload 数据取自 `login_qrcode_token` 接口响应
 
@@ -1447,30 +1447,30 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_qrcode_token(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_qrcode_token(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_qrcode_token(
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取登录二维码，扫码可用
 
@@ -1483,33 +1483,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_qrcode_token_open(
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_qrcode_token_open(
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_qrcode_token_open(
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取开放平台的登录二维码，扫码可用，采用 PKCE (Proof Key for Code Exchange)
 
@@ -1575,9 +1575,9 @@ class ClientRequestMixin:
         api = complete_url("/open/authDeviceCode", base_url=base_url)
         if isinstance(payload, (int, str)):
             payload = {
-                "client_id": payload, 
-                "code_challenge": _default_code_challenge, 
-                "code_challenge_method": _default_code_challenge_method, 
+                "client_id": payload,
+                "code_challenge": _default_code_challenge,
+                "code_challenge_method": _default_code_challenge_method,
             }
         request, request_kwargs = get_request(
             url=api, method="POST", data=payload, **request_kwargs)
@@ -1586,33 +1586,33 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def login_refresh_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def login_refresh_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def login_refresh_token_open(
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """用一个 refresh_token 去获取新的 access_token 和 refresh_token，然后原来的 refresh_token 作废
 
@@ -1637,39 +1637,39 @@ class ClientRequestMixin:
     @overload
     @classmethod
     def login_with_qrcode(
-        cls, 
-        /, 
-        app: None | str = "", 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        app: None | str = "",
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @classmethod
     def login_with_qrcode(
-        cls, 
-        /, 
-        app: None | str = "", 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        cls,
+        /,
+        app: None | str = "",
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @classmethod
     def login_with_qrcode(
-        cls, 
-        /, 
-        app: None | str = "", 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        app: None | str = "",
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """二维码扫码登录
 
@@ -1747,9 +1747,9 @@ class ClientRequestMixin:
         def gen_step():
             nonlocal console_qrcode
             resp = yield cls.login_qrcode_token(
-                async_=async_, 
-                base_url=base_url, 
-                **request_kwargs, 
+                async_=async_,
+                base_url=base_url,
+                **request_kwargs,
             )
             qrcode_token = resp["data"]
             login_uid = qrcode_token["uid"]
@@ -1775,10 +1775,10 @@ class ClientRequestMixin:
             while True:
                 try:
                     resp = yield cls.login_qrcode_scan_status(
-                        qrcode_token, 
-                        base_url=base_url, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        qrcode_token,
+                        base_url=base_url,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 except Exception:
                     continue
@@ -1798,11 +1798,11 @@ class ClientRequestMixin:
                         raise P115LoginError(errno.EAUTH, f"qrcode: aborted with {resp!r}")
             if app:
                 return cls.login_qrcode_scan_result(
-                    login_uid, 
-                    app=app, 
-                    base_url=base_url, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    login_uid,
+                    app=app,
+                    base_url=base_url,
+                    async_=async_,
+                    **request_kwargs,
                 )
             else:
                 return qrcode_token
@@ -1811,39 +1811,39 @@ class ClientRequestMixin:
     @overload
     @classmethod
     def login_with_app_id(
-        cls, 
-        /, 
-        app_id: int, 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        app_id: int,
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @classmethod
     def login_with_app_id(
-        cls, 
-        /, 
-        app_id: int, 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        cls,
+        /,
+        app_id: int,
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @classmethod
     def login_with_app_id(
-        cls, 
-        /, 
-        app_id: int, 
-        console_qrcode: bool = True, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        app_id: int,
+        console_qrcode: bool = True,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """二维码扫码登录开放平台
 
@@ -1856,10 +1856,10 @@ class ClientRequestMixin:
         def gen_step():
             nonlocal console_qrcode
             resp = yield cls.login_qrcode_token_open(
-                app_id, 
-                base_url=base_url, 
-                async_=async_, 
-                **request_kwargs, 
+                app_id,
+                base_url=base_url,
+                async_=async_,
+                **request_kwargs,
             )
             qrcode_token = resp["data"]
             login_uid = qrcode_token["uid"]
@@ -1885,10 +1885,10 @@ class ClientRequestMixin:
             while True:
                 try:
                     resp = yield cls.login_qrcode_scan_status(
-                        qrcode_token, 
-                        base_url=base_url, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        qrcode_token,
+                        base_url=base_url,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 except Exception:
                     continue
@@ -1907,10 +1907,10 @@ class ClientRequestMixin:
                     case _:
                         raise P115LoginError(errno.EAUTH, f"qrcode: aborted with {resp!r}")
             return cls.login_qrcode_access_token_open(
-                login_uid, 
-                base_url=base_url, 
-                async_=async_, 
-                **request_kwargs, 
+                login_uid,
+                base_url=base_url,
+                async_=async_,
+                **request_kwargs,
             )
         return run_gen_step(gen_step, async_)
 
@@ -1919,27 +1919,27 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def upload_gettoken(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def upload_gettoken(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def upload_gettoken(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取阿里云 OSS 的 token（上传凭证）
 
@@ -1952,34 +1952,34 @@ class ClientRequestMixin:
     @overload
     @staticmethod
     def upload_url(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     @staticmethod
     def upload_url(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     @staticmethod
     def upload_url(
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用于上传的一些 http 接口，此接口具有一定幂等性，请求一次，然后把响应记下来即可
 
         GET https://uplb.115.com/3.0/getuploadinfo.php
 
         :response:
-            - endpoint: 此接口用于上传文件到阿里云 OSS 
+            - endpoint: 此接口用于上传文件到阿里云 OSS
             - gettokenurl: 上传前需要用此接口获取 token
         """
         api = complete_url("/3.0/getuploadinfo.php", base_url=base_url)
@@ -2001,19 +2001,19 @@ class P115OpenClient(ClientRequestMixin):
     :param console_qrcode: 需要扫码登录时，是否在命令行输出二维码
     """
     def __init__(
-        self, 
-        /, 
-        access_token: str = "", 
-        refresh_token: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
+        self,
+        /,
+        access_token: str = "",
+        refresh_token: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
     ):
         self.init(
-            access_token=access_token, 
-            refresh_token=refresh_token, 
-            app_id=app_id, 
-            console_qrcode=console_qrcode, 
-            instance=self, 
+            access_token=access_token,
+            refresh_token=refresh_token,
+            app_id=app_id,
+            console_qrcode=console_qrcode,
+            instance=self,
         )
 
     def __eq__(self, other, /) -> bool:
@@ -2029,45 +2029,45 @@ class P115OpenClient(ClientRequestMixin):
     @overload
     @classmethod
     def init(
-        cls, 
-        /, 
-        access_token: str = "", 
-        refresh_token: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        access_token: str = "",
+        refresh_token: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> Self:
         ...
     @overload
     @classmethod
     def init(
-        cls, 
-        /, 
-        access_token: str = "", 
-        refresh_token: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        cls,
+        /,
+        access_token: str = "",
+        refresh_token: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, Self]:
         ...
     @classmethod
     def init(
-        cls, 
-        /, 
-        access_token: str = "", 
-        refresh_token: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        access_token: str = "",
+        refresh_token: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> Self | Coroutine[Any, Any, Self]:
         def gen_step():
             if instance is None:
@@ -2080,16 +2080,16 @@ class P115OpenClient(ClientRequestMixin):
             if not access_token:
                 if refresh_token:
                     resp = yield self.login_refresh_token_open(
-                        refresh_token, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        refresh_token,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 else:
                     resp = yield self.login_with_app_id(
-                        app_id or 100195125, 
-                        console_qrcode=console_qrcode, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        app_id or 100195125,
+                        console_qrcode=console_qrcode,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 check_response(resp)
                 data = resp["data"]
@@ -2130,48 +2130,48 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def refresh_access_token(
-        self, 
-        /, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def refresh_access_token(
-        self, 
-        /, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def refresh_access_token(
-        self, 
-        /, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新 access_token 和 refresh_token （⚠️ 目前是 7200 秒内就要求刷新一次）
         """
         def gen_step():
             if refresh_token := getattr(self, "refresh_token", ""):
                 resp = yield self.login_refresh_token_open(
-                    refresh_token, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    refresh_token,
+                    async_=async_,
+                    **request_kwargs,
                 )
             elif app_id := self.app_id:
                 if hasattr(self, "login_with_open"):
                     resp = yield self.login_with_open(
-                        app_id, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        app_id,
+                        async_=async_,
+                        **request_kwargs,
                     )
                 else:
                     resp = yield self.login_with_app_id(
-                        app_id, 
-                        console_qrcode=True, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        app_id,
+                        console_qrcode=True,
+                        async_=async_,
+                        **request_kwargs,
                     )
             else:
                 raise RuntimeError("no `refresh_token` or `app_id` provided")
@@ -2186,31 +2186,31 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_quota_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_quota_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_quota_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取云下载配额信息
 
@@ -2225,38 +2225,38 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_task_add_bt(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_add_bt(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_add_bt(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加云下载 BT 任务
 
-        POST https://proapi.115.com/open/offline/add_task_bt 
+        POST https://proapi.115.com/open/offline/add_task_bt
 
         .. admonition:: Reference
 
@@ -2275,34 +2275,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加云下载链接任务
 
@@ -2325,34 +2325,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空云下载任务
 
@@ -2379,34 +2379,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_task_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除云下载任务
 
@@ -2427,34 +2427,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取云下载任务列表
 
@@ -2473,35 +2473,35 @@ class P115OpenClient(ClientRequestMixin):
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
-    def clouddownload_torrent_info(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
-    def clouddownload_torrent_info(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
-    def clouddownload_torrent_info(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """解析 BT 种子
 
@@ -2522,37 +2522,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取文件的下载链接，此接口是对 `download_url_info` 的封装
 
@@ -2578,10 +2578,10 @@ class P115OpenClient(ClientRequestMixin):
         pickcode = self.to_pickcode(pickcode)
         def gen_step():
             resp = yield self.download_url_info_open(
-                pickcode, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                pickcode,
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
             resp["pickcode"] = pickcode
             check_response(resp)
@@ -2589,58 +2589,58 @@ class P115OpenClient(ClientRequestMixin):
                 url = info["url"]
                 if strict and not url:
                     throw(
-                        errno.EISDIR, 
-                        f"{fid} is a directory, with response {resp}", 
+                        errno.EISDIR,
+                        f"{fid} is a directory, with response {resp}",
                     )
                 return P115URL(
-                    url["url"] if url else "", 
-                    id=int(fid), 
-                    pickcode=info["pick_code"], 
-                    name=info["file_name"], 
-                    size=int(info["file_size"]), 
-                    sha1=info["sha1"], 
-                    is_dir=not url, 
-                    headers=resp["headers"], 
+                    url["url"] if url else "",
+                    id=int(fid),
+                    pickcode=info["pick_code"],
+                    name=info["file_name"],
+                    size=int(info["file_size"]),
+                    sha1=info["sha1"],
+                    is_dir=not url,
+                    headers=resp["headers"],
                 )
             throw(
-                errno.ENOENT, 
-                f"no such pickcode: {pickcode!r}, with response {resp}", 
+                errno.ENOENT,
+                f"no such pickcode: {pickcode!r}, with response {resp}",
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL]:
         ...
     @overload
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict[int, P115URL]]:
         ...
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL] | Coroutine[Any, Any, dict[int, P115URL]]:
         """批量获取文件的下载链接，此接口是对 `download_url_info` 的封装
 
@@ -2669,10 +2669,10 @@ class P115OpenClient(ClientRequestMixin):
             pickcodes = ",".join(map(self.to_pickcode, pickcodes))
         def gen_step():
             resp = yield self.download_url_info_open(
-                pickcodes, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                pickcodes,
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
             resp["pickcode"] = pickcodes
             urls: dict[int, P115URL] = {}
@@ -2686,51 +2686,51 @@ class P115OpenClient(ClientRequestMixin):
                         continue
                     fid = int(fid)
                     urls[fid] = P115URL(
-                        url["url"] if url else "", 
-                        id=fid, 
-                        pickcode=info["pick_code"], 
-                        name=info["file_name"], 
-                        size=int(info["file_size"]), 
-                        sha1=info["sha1"], 
-                        is_dir=not url, 
-                        headers=resp["headers"], 
+                        url["url"] if url else "",
+                        id=fid,
+                        pickcode=info["pick_code"],
+                        name=info["file_name"],
+                        size=int(info["file_size"]),
+                        sha1=info["sha1"],
+                        is_dir=not url,
+                        headers=resp["headers"],
                     )
             return urls
         return run_gen_step(gen_step, async_)
 
     @overload
     def download_url_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_url_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_url_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的下载链接
 
@@ -2765,37 +2765,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_copy(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_copy(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_copy(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """文件复制
 
@@ -2823,34 +2823,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除文件或目录
 
@@ -2875,34 +2875,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息
 
@@ -2941,8 +2941,8 @@ class P115OpenClient(ClientRequestMixin):
             - cur: 0 | 1 = <default>   💡 是否只显示当前目录
             - custom_order: 0 | 1 | 2 = <default> 💡 是否使用记忆排序。如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 2
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - date: str = <default> 💡 筛选日期
@@ -3003,8 +3003,8 @@ class P115OpenClient(ClientRequestMixin):
         if isinstance(payload, (int, str)):
             payload = {"cid": payload}
         payload = {
-            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0, 
-            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload, 
+            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0,
+            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload,
         }
         if payload.keys() & frozenset(("asc", "fc_mix", "o")):
             payload["custom_order"] = 2
@@ -3012,37 +3012,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件或目录详情
 
@@ -3089,37 +3089,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建目录
 
@@ -3141,37 +3141,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_move(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_move(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_move(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """文件移动
 
@@ -3198,31 +3198,31 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict, 
-        /, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict,
+        /,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict, 
-        /, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict,
+        /,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict, 
-        /, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict,
+        /,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重命名文件或目录，此接口是对 `fs_update_open` 的封装
 
@@ -3239,34 +3239,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索文件或目录
 
@@ -3347,41 +3347,41 @@ class P115OpenClient(ClientRequestMixin):
         if isinstance(payload, str):
             payload = {"search_value": payload}
         payload = {
-            "aid": 1, "cid": 0, "limit": 32, "offset": 0, 
-            "show_dir": 1, "search_value": ".", **payload, 
+            "aid": 1, "cid": 0, "limit": 32, "offset": 0,
+            "show_dir": 1, "search_value": ".", **payload,
         }
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置或取消星标，此接口是对 `fs_update_open` 的封装
 
@@ -3404,34 +3404,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频在线播放地址（和视频文件相关数据）
 
@@ -3455,34 +3455,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_video_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频播放进度
 
@@ -3502,34 +3502,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_video_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """记忆视频播放进度
 
@@ -3551,34 +3551,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_video_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """提交视频转码
 
@@ -3603,34 +3603,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """视频字幕列表
 
@@ -3650,34 +3650,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def fs_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置文件或目录（备注、标签、封面等）
 
@@ -3706,37 +3706,37 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = {}, 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = {},
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = {}, 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = {},
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = {}, 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = {},
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：删除或清空
 
@@ -3761,34 +3761,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：列表
 
@@ -3801,7 +3801,7 @@ class P115OpenClient(ClientRequestMixin):
         :payload:
             - limit: int = 32
             - offset: int = 0
-        """ 
+        """
         api = complete_url("/open/rb/list", base_url)
         if isinstance(payload, int):
             payload = {"limit": 32, "offset": payload}
@@ -3810,34 +3810,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：还原
 
@@ -3864,31 +3864,31 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def upload_gettoken_open(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_gettoken_open(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_gettoken_open(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取阿里云 OSS 的 token（上传凭证）
 
@@ -3903,34 +3903,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """初始化上传任务，可能秒传
 
@@ -3949,7 +3949,7 @@ class P115OpenClient(ClientRequestMixin):
 
                 -  0: 单文件上传任务标识 1 条单独的文件上传记录
                 -  1: 目录任务调度的第 1 个子文件上传请求标识 1 次目录上传记录
-                -  2: 目录任务调度的其余后续子文件不作记作单独上传的上传记录 
+                -  2: 目录任务调度的其余后续子文件不作记作单独上传的上传记录
                 - -1: 没有该参数
 
             - sign_key: str = "" 💡 2 次验证时读取文件的范围
@@ -3960,34 +3960,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取恢复断点续传所需信息
 
@@ -4018,8 +4018,8 @@ class P115OpenClient(ClientRequestMixin):
                 callback_var = loads(payload["callback"]["callback_var"])
             if callback_var:
                 payload.update(
-                    pick_code=callback_var["x:pick_code"], 
-                    target=callback_var["x:target"], 
+                    pick_code=callback_var["x:pick_code"],
+                    target=callback_var["x:target"],
                 )
         payload.setdefault("fileid", "0" * 40)
         payload.setdefault("file_size", 1)
@@ -4028,43 +4028,43 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """初始化上传，可能秒传，此接口是对 `upload_init_open` 的封装
 
@@ -4090,16 +4090,16 @@ class P115OpenClient(ClientRequestMixin):
             else:
                 target = f"U_1_{pid}"
             payload = {
-                "file_name": filename, 
-                "fileid": filesha1.upper(), 
-                "file_size": filesize, 
-                "target": target, 
-                "topupload": 1, 
+                "file_name": filename,
+                "fileid": filesha1.upper(),
+                "file_size": filesize,
+                "target": target,
+                "topupload": 1,
             }
             resp = yield self.upload_init_open(
-                payload, 
-                async_=async_, 
-                **request_kwargs, 
+                payload,
+                async_=async_,
+                **request_kwargs,
             )
             if not resp["state"]:
                 return resp
@@ -4119,9 +4119,9 @@ class P115OpenClient(ClientRequestMixin):
                 else:
                     payload["sign_val"] = sha1(content).hexdigest().upper()
                 resp = yield self.upload_init_open(
-                    payload, 
+                    payload,
                     async_=async_, # type: ignore
-                    **request_kwargs, 
+                    **request_kwargs,
                 )
             resp["reuse"] = resp["data"].get("status") == 2
             return resp
@@ -4129,55 +4129,55 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """上传文件
 
@@ -4204,54 +4204,54 @@ class P115OpenClient(ClientRequestMixin):
         :return: 接口响应
         """
         request_kwargs["headers"] = dict(
-            request_kwargs.get("headers") or (), 
-            authorization=self.headers["authorization"], 
+            request_kwargs.get("headers") or (),
+            authorization=self.headers["authorization"],
         )
         if isinstance(pid, str) and not pid.startswith(("U_", "S_")):
             pid = self.to_id(pid)
         return upload_file(
-            file=file, 
-            pid=pid, 
-            filename=filename, 
-            filesha1=filesha1, 
-            filesize=filesize, 
-            partsize=partsize, 
-            callback=callback, 
-            upload_id=upload_id, 
-            endpoint=endpoint, 
-            async_=async_, 
-            **request_kwargs, 
+            file=file,
+            pid=pid,
+            filename=filename,
+            filesha1=filesha1,
+            filesize=filesize,
+            partsize=partsize,
+            callback=callback,
+            upload_id=upload_id,
+            endpoint=endpoint,
+            async_=async_,
+            **request_kwargs,
         )
 
     ########## User API ##########
 
     @overload
     def user_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户信息
 
@@ -4268,34 +4268,34 @@ class P115OpenClient(ClientRequestMixin):
 
     @overload
     def vip_qr_url(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def vip_qr_url(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def vip_qr_url(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取产品列表地址（即引导用户扫码购买 115 的 VIP 服务，以获取提成）
 
@@ -4326,7 +4326,7 @@ class P115OpenClient(ClientRequestMixin):
     clouddownload_task_clear_open = clouddownload_task_clear
     clouddownload_task_del_open = clouddownload_task_del
     clouddownload_task_list_open = clouddownload_task_list
-    clouddownload_torrent_info_open = clouddownload_torrent_info
+    clouddownload_torrent_open = clouddownload_torrent
     download_url_open = download_url
     download_urls_open = download_urls
     download_url_info_open = download_url_info
@@ -4358,11 +4358,11 @@ class P115OpenClient(ClientRequestMixin):
     to_id = staticmethod(to_id)
 
     def to_pickcode(
-        self, 
-        id: int | str, 
-        /, 
-        prefix: Literal["a", "b", "c", "d", "e", "fa", "fb", "fc", "fd", "fe"] = "a", 
-        stable_point: str = "", 
+        self,
+        id: int | str,
+        /,
+        prefix: Literal["a", "b", "c", "d", "e", "fa", "fb", "fc", "fd", "fe"] = "a",
+        stable_point: str = "",
     ) -> str:
         """把可能是 id 或 pickcode 的一律转换成 pickcode
 
@@ -4376,9 +4376,9 @@ class P115OpenClient(ClientRequestMixin):
         :return: pickcode
         """
         return to_pickcode(
-            id, 
-            stable_point=stable_point or self.pickcode_stable_point, 
-            prefix=prefix, 
+            id,
+            stable_point=stable_point or self.pickcode_stable_point,
+            prefix=prefix,
         )
 
 
@@ -4467,19 +4467,19 @@ class P115Client(P115OpenClient):
     +-------+----------+------------+----------------------+
     """
     def __init__(
-        self, 
-        /, 
-        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None, 
-        app: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
+        self,
+        /,
+        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None,
+        app: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
     ):
         self.init(
-            cookies=cookies, 
-            app=app, 
-            app_id=app_id, 
-            console_qrcode=console_qrcode, 
-            instance=self, 
+            cookies=cookies,
+            app=app,
+            app_id=app_id,
+            console_qrcode=console_qrcode,
+            instance=self,
         )
 
     def __repr__(self, /) -> str:
@@ -4493,45 +4493,45 @@ class P115Client(P115OpenClient):
     @overload # type: ignore
     @classmethod
     def init(
-        cls, 
-        /, 
-        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None, 
-        app: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None,
+        app: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115Client:
         ...
     @overload
     @classmethod
     def init(
-        cls, 
-        /, 
-        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None, 
-        app: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        cls,
+        /,
+        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None,
+        app: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115Client]:
         ...
     @classmethod
     def init(
-        cls, 
-        /, 
-        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None, 
-        app: str = "", 
-        app_id: int = 0, 
-        console_qrcode: bool = True, 
-        instance: None | Self = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        cookies: None | str | PathLike | Mapping[str, str] | Iterable[Mapping | Cookie | Morsel] = None,
+        app: str = "",
+        app_id: int = 0,
+        console_qrcode: bool = True,
+        instance: None | Self = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115Client | Coroutine[Any, Any, P115Client]:
         def gen_step():
             if instance is None:
@@ -4541,10 +4541,10 @@ class P115Client(P115OpenClient):
             self.app_id = app_id
             if cookies is None:
                 yield self.login(
-                    app or "alipaymini", 
-                    console_qrcode=console_qrcode, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    app or "alipaymini",
+                    console_qrcode=console_qrcode,
+                    async_=async_,
+                    **request_kwargs,
                 )
             elif isinstance(cookies, PathLike):
                 if isinstance(cookies, PurePath) and hasattr(cookies, "open"):
@@ -4559,10 +4559,10 @@ class P115Client(P115OpenClient):
 
     @classmethod
     def from_path(
-        cls, 
-        /, 
-        path: bytes | str | PathLike = Path("~/115-cookies.txt").expanduser(), 
-        app_id: int = 0, 
+        cls,
+        /,
+        path: bytes | str | PathLike = Path("~/115-cookies.txt").expanduser(),
+        app_id: int = 0,
     ) -> P115Client:
         if not isinstance(path, PurePath):
             path = Path(fsdecode(path))
@@ -4580,33 +4580,33 @@ class P115Client(P115OpenClient):
 
     @overload
     def login(
-        self, 
-        /, 
-        app: None | str = None, 
-        console_qrcode: bool = True, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        console_qrcode: bool = True,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> Self:
         ...
     @overload
     def login(
-        self, 
-        /, 
-        app: None | str = None, 
-        console_qrcode: bool = True, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        console_qrcode: bool = True,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, Self]:
         ...
     def login(
-        self, 
-        /, 
-        app: None | str = None, 
-        console_qrcode: bool = True, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        console_qrcode: bool = True,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> Self | Coroutine[Any, Any, Self]:
         """扫码二维码登录，如果已登录则忽略
 
@@ -4687,10 +4687,10 @@ class P115Client(P115OpenClient):
             if not app:
                 app = "alipaymini"
             resp = yield self.login_with_qrcode(
-                app, 
-                console_qrcode=console_qrcode, 
-                async_=async_, 
-                **request_kwargs, 
+                app,
+                console_qrcode=console_qrcode,
+                async_=async_,
+                **request_kwargs,
             )
             while True:
                 try:
@@ -4699,10 +4699,10 @@ class P115Client(P115OpenClient):
                 except P115AuthenticationError:
                     print("login error:", resp)
                     resp = yield self.login_with_qrcode(
-                        app, 
-                        console_qrcode=console_qrcode, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        app,
+                        console_qrcode=console_qrcode,
+                        async_=async_,
+                        **request_kwargs,
                     )
             self.update_cookies(resp["data"]["cookie"])
             return self
@@ -4710,31 +4710,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_with_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_with_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_with_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """执行一次自动扫登录二维码，然后绑定到指定设备
 
@@ -4812,40 +4812,40 @@ class P115Client(P115OpenClient):
                 raise ValueError("can't determine the login app")
             uid: str = yield self.login_without_app(async_=async_, **request_kwargs)
             return self.login_qrcode_scan_result(
-                uid, 
-                app=app, 
-                async_=async_, 
-                **request_kwargs, 
+                uid,
+                app=app,
+                async_=async_,
+                **request_kwargs,
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def login_without_app(
-        self, 
-        /, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> str:
         ...
     @overload
     def login_without_app(
-        self, 
-        /, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        show_warning: bool = False,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, str]:
         ...
     def login_without_app(
-        self, 
-        /, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> str | Coroutine[Any, Any, str]:
         """执行一次自动扫登录二维码，但不绑定设备，返回扫码的 uid，可用于之后绑定设备
 
@@ -4857,21 +4857,21 @@ class P115Client(P115OpenClient):
         """
         def gen_step():
             uid = check_response((yield self.login_qrcode_token( # type: ignore
-                async_=async_, 
-                **request_kwargs, 
+                async_=async_,
+                **request_kwargs,
             )))["data"]["uid"]
             resp = yield self.login_qrcode_scan(
-                uid, 
-                async_=async_, 
-                **request_kwargs, 
+                uid,
+                async_=async_,
+                **request_kwargs,
             )
             check_response(resp)
             if show_warning:
                 warn(f"qrcode scanned: {resp}", category=P115Warning)
             resp = yield self.login_qrcode_scan_confirm(
-                uid, 
-                async_=async_, 
-                **request_kwargs, 
+                uid,
+                async_=async_,
+                **request_kwargs,
             )
             check_response(resp)
             return uid
@@ -4879,31 +4879,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_info_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_info_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_info_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取某个开放接口应用的信息（目前可获得名称和头像）
 
@@ -4925,42 +4925,42 @@ class P115Client(P115OpenClient):
             check_response(resp)
             tip_txt = resp["data"]["tip_txt"]
             return {
-                "app_id": app_id, 
-                "name": tip_txt[:-10].removeprefix("\ufeff"), 
-                "icon": resp["data"]["icon"], 
+                "app_id": app_id,
+                "name": tip_txt[:-10].removeprefix("\ufeff"),
+                "icon": resp["data"]["icon"],
             }
         return run_gen_step(gen_step, async_)
 
     @overload
     def login_with_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        show_warning: bool = False, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        show_warning: bool = False,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_with_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        show_warning: bool = False, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        show_warning: bool = False,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_with_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        *, 
-        show_warning: bool = False, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        *,
+        show_warning: bool = False,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """登录某个开放接口应用
 
@@ -4993,37 +4993,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_another_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        replace: bool | Self = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        replace: bool | Self = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> Self:
         ...
     @overload
     def login_another_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        replace: bool | Self = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        replace: bool | Self = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, Self]:
         ...
     def login_another_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        replace: bool | Self = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        replace: bool | Self = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> Self | Coroutine[Any, Any, Self]:
         """登录某个设备（同一个设备可以有多个同时在线，但可以通过某些操作，把除了最近登录的那个都下线，也可以专门把最近登录那个也下线）
 
@@ -5035,7 +5035,7 @@ class P115Client(P115OpenClient):
             所以你可以用一个设备的 cookies 专门用于扫码登录，获取另一个设备的 cookies 执行网盘操作，第 2 个 cookies 失效了，则用第 1 个 cookies 扫码，如此可避免单个 cookies 失效后，不能自动获取新的
 
         :param app: 要登录的 app，如果为 None，则用当前登录设备，如果无当前登录设备，则报错
-        :param replace: 替换某个 client 对象的 cookie
+        :param replace: 替换某个 ``P115Client`` 对象的 cookie
 
             - 如果为 ``P115Client``, 则更新到此对象
             - 如果为 True，则更新到 `self`
@@ -5112,10 +5112,10 @@ class P115Client(P115OpenClient):
             if not app and isinstance(replace, P115Client):
                 app = yield replace.login_app(async_=True)
             resp = yield self.login_with_app(
-                app, 
-                show_warning=show_warning, 
-                async_=async_, 
-                **request_kwargs, 
+                app,
+                show_warning=show_warning,
+                async_=async_,
+                **request_kwargs,
             )
             check_response(resp)
             cookies = resp["data"]["cookie"]
@@ -5135,37 +5135,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_another_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        replace: bool | P115OpenClient = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        replace: bool | P115OpenClient = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115OpenClient:
         ...
     @overload
     def login_another_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        replace: bool | P115OpenClient = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        replace: bool | P115OpenClient = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115OpenClient]:
         ...
     def login_another_open(
-        self, 
-        /, 
-        app_id: int = 0, 
-        replace: bool | P115OpenClient = False, 
-        show_warning: bool = False, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app_id: int = 0,
+        replace: bool | P115OpenClient = False,
+        show_warning: bool = False,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115OpenClient | Coroutine[Any, Any, P115OpenClient]:
         """登录某个开放接口应用
 
@@ -5191,10 +5191,10 @@ class P115Client(P115OpenClient):
             app_id = 100195125
         def gen_step():
             resp = yield self.login_with_open(
-                app_id, 
-                show_warning=show_warning, 
-                async_=async_, 
-                **request_kwargs, 
+                app_id,
+                show_warning=show_warning,
+                async_=async_,
+                **request_kwargs,
             )
             check_response(resp)
             data = resp["data"]
@@ -5214,36 +5214,36 @@ class P115Client(P115OpenClient):
     @overload
     @classmethod
     def login_bind_app(
-        cls, 
-        /, 
-        uid: str, 
-        app: str = "alipaymini", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        uid: str,
+        app: str = "alipaymini",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> Self:
         ...
     @overload
     @classmethod
     def login_bind_app(
-        cls, 
-        /, 
-        uid: str, 
-        app: str = "alipaymini", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        cls,
+        /,
+        uid: str,
+        app: str = "alipaymini",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, Self]:
         ...
     @classmethod
     def login_bind_app(
-        cls, 
-        /, 
-        uid: str, 
-        app: str = "alipaymini", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        cls,
+        /,
+        uid: str,
+        app: str = "alipaymini",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> Self | Coroutine[Any, Any, Self]:
         """获取绑定到某个设备的 cookies
 
@@ -5321,10 +5321,10 @@ class P115Client(P115OpenClient):
         """
         def gen_step():
             resp = yield cls.login_qrcode_scan_result(
-                uid, 
-                app=app, 
-                async_=async_, 
-                **request_kwargs, 
+                uid,
+                app=app,
+                async_=async_,
+                **request_kwargs,
             )
             check_response(resp)
             cookies = resp["data"]["cookie"]
@@ -5335,37 +5335,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_adopt(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_adopt(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_adopt(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """采纳助愿
 
@@ -5381,37 +5381,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_aid_desire(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_aid_desire(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_aid_desire(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """创建助愿（如果提供 file_ids，则会创建一个分享链接）
 
@@ -5428,37 +5428,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_aid_desire_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_aid_desire_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_aid_desire_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除助愿
 
@@ -5474,37 +5474,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_desire_aid_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_desire_aid_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_desire_aid_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取许愿的助愿列表
 
@@ -5525,34 +5525,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_get_act_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_get_act_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_get_act_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取许愿树活动的信息
 
@@ -5563,37 +5563,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_get_desire_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_get_desire_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_get_desire_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取的许愿信息
 
@@ -5609,34 +5609,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_home_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_home_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_home_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """首页的许愿树（随机刷新 15 条）
 
@@ -5647,37 +5647,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_my_aid_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_my_aid_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_my_aid_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我的助愿列表
 
@@ -5702,37 +5702,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_my_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_my_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_my_desire(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我的许愿列表
 
@@ -5757,37 +5757,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_wish(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_wish(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_wish(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """创建许愿
 
@@ -5806,37 +5806,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def act_xys_wish_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def act_xys_wish_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def act_xys_wish_del(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://act.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://act.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除许愿
 
@@ -5854,31 +5854,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def captcha_all(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bytes:
         ...
     @overload
     def captcha_all(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bytes]:
         ...
     def captcha_all(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bytes | Coroutine[Any, Any, bytes]:
         """返回一张包含 10 个汉字的图片，包含验证码中 4 个汉字（有相应的编号，从 0 到 9，计数按照从左到右，从上到下的顺序）
 
@@ -5890,31 +5890,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def captcha_code(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bytes:
         ...
     @overload
     def captcha_code(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bytes]:
         ...
     def captcha_code(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bytes | Coroutine[Any, Any, bytes]:
         """更新验证码，并获取图片数据（含 4 个汉字）
 
@@ -5926,31 +5926,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def captcha_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def captcha_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def captcha_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取验证码的签名字符串
 
@@ -5961,34 +5961,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def captcha_single(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bytes:
         ...
     @overload
     def captcha_single(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bytes]:
         ...
     def captcha_single(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://captchaapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://captchaapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bytes | Coroutine[Any, Any, bytes]:
         """10 个汉字单独的图片，包含验证码中 4 个汉字，编号从 0 到 9
 
@@ -6005,34 +6005,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def captcha_verify(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def captcha_verify(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def captcha_verify(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """提交验证码
 
@@ -6055,11 +6055,11 @@ class P115Client(P115OpenClient):
                 resp = yield self.captcha_sign(async_=async_)
                 payload["sign"] = resp["sign"]
             return self.request(
-                url=api, 
-                method="POST", 
-                data=payload, 
-                async_=async_, 
-                **request_kwargs, 
+                url=api,
+                method="POST",
+                data=payload,
+                async_=async_,
+                **request_kwargs,
             )
         return run_gen_step(gen_step, async_)
 
@@ -6067,40 +6067,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def _clouddownload_web_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _clouddownload_web_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _clouddownload_web_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         api = complete_url("/web/", base_url=base_url)
         if action:
@@ -6110,48 +6110,48 @@ class P115Client(P115OpenClient):
         else:
             request_kwargs["params"] = payload
         return self.request(
-            url=api, 
-            method=method, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method=method,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def _clouddownload_app_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _clouddownload_app_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _clouddownload_app_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         api = complete_url("/", base_url=base_url)
         if action:
@@ -6162,45 +6162,45 @@ class P115Client(P115OpenClient):
         else:
             request_kwargs["params"] = payload
         return self.request(
-            url=api, 
-            method=method, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method=method,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def _clouddownload_lixianssp_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _clouddownload_lixianssp_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _clouddownload_lixianssp_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         api = complete_url("/lixianssp/", base_url=base_url)
         request_kwargs["method"] = "POST"
@@ -6210,8 +6210,8 @@ class P115Client(P115OpenClient):
             payload["ac"] = action
         payload["app_ver"] = "99.99.99.99"
         request_kwargs["headers"] = {
-            **(request_kwargs.get("headers") or {}), 
-            "user-agent": "Mozilla/5.0 115disk/99.99.99.99 115Browser/99.99.99.99 115wangpan_android/99.99.99.99", 
+            **(request_kwargs.get("headers") or {}),
+            "user-agent": "Mozilla/5.0 115disk/99.99.99.99 115Browser/99.99.99.99 115wangpan_android/99.99.99.99",
         }
         request_kwargs["ecdh_encrypt"] = False
         def parse(_, content: bytes, /) -> dict:
@@ -6224,51 +6224,51 @@ class P115Client(P115OpenClient):
             return json
         request_kwargs.setdefault("parse", parse)
         return self.request(
-            url=api, 
-            data={"data": rsa_encrypt(dumps(payload)).decode("ascii")}, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            data={"data": rsa_encrypt(dumps(payload)).decode("ascii")},
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def _clouddownload_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _clouddownload_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _clouddownload_request(
-        self, 
-        payload: dict = {}, 
-        /, 
-        action: str = "", 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        action: str = "",
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         match type:
             case "web":
@@ -6278,41 +6278,41 @@ class P115Client(P115OpenClient):
             case _:
                 call = self._clouddownload_app_request
         return call(
-            payload, 
-            action, 
-            method=method, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            action,
+            method=method,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_downpath(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_downpath(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_downpath(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前默认的云下载到的目录信息（可能有多个）
 
@@ -6323,34 +6323,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def clouddownload_downpath_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_downpath_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_downpath_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置默认选择的云下载到的目录信息
 
@@ -6366,40 +6366,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def clouddownload_get_id(
-        self, 
-        payload: dict | int = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_get_id(
-        self, 
-        payload: dict | int = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_get_id(
-        self, 
-        payload: dict | int = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | int = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取和云下载有关的目录 id
 
@@ -6415,192 +6415,321 @@ class P115Client(P115OpenClient):
         if isinstance(payload, int):
             payload = {"torrent": payload}
         return self._clouddownload_request(
-            payload, 
-            "get_id", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "get_id",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_quota_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_quota_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_quota_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前云下载配额信息（简略）
 
         GET https://clouddownload.115.com/?ac=get_quota_info
         """
         return self._clouddownload_request(
-            ac="get_quota_info", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            ac="get_quota_info",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_quota_package_array(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_quota_package_array(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_quota_package_array(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前云下载配额信息（详细）
 
         GET https://clouddownload.115.com/?ac=get_quota_package_array
         """
         return self._clouddownload_request(
-            ac="get_quota_package_array", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            ac="get_quota_package_array",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_quota_package_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_quota_package_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_quota_package_info(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前云下载配额信息（详细）
 
         GET https://clouddownload.115.com/?ac=get_quota_package_info
         """
         return self._clouddownload_request(
-            ac="get_quota_package_info", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            ac="get_quota_package_info",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
+        )
+
+    @overload
+    def clouddownload_sign(
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def clouddownload_sign(
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def clouddownload_sign(
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """获取 sign 和 time 字段（各个添加任务的接口需要），以及其它信息
+
+        GET https://115.com/?ct=clouddownload&ac=space
+        """
+        api = complete_url(base_url=base_url, query={"ct": "clouddownload", "ac": "space"})
+        return self.request(url=api, async_=async_, **request_kwargs)
+
+    @overload
+    def clouddownload_sign_app(
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def clouddownload_sign_app(
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def clouddownload_sign_app(
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """获取 sign 和 time 字段（各个添加任务的接口需要）
+
+        GET https://proapi.115.com/{app}/files/offlinesign
+        """
+        api = complete_url("/files/offlinesign", base_url=base_url, app=app)
+        return self.request(url=api, async_=async_, **request_kwargs)
+
+    @overload
+    def clouddownload_task(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def clouddownload_task(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def clouddownload_task(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """获取云下载任务信息
+
+        GET https://clouddownload.115.com/?ac=get_user_task
+
+        :payload:
+            - info_hash: str
+        """
+        if isinstance(payload, str):
+            payload = {"info_hash": payload}
+        return self._clouddownload_request(
+            payload,
+            "get_user_task",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_task_add_bt(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_add_bt(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_add_bt(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加一个种子作为云下载任务
 
@@ -6620,51 +6749,51 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"info_hash": payload}
         return self._clouddownload_request(
-            payload, 
-            "add_task_bt", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "add_task_bt",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_task_add_url(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_add_url(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_add_url(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加一个云下载任务
 
@@ -6678,51 +6807,51 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"url": payload}
         return self._clouddownload_request(
-            payload, 
-            "add_task_url", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "add_task_url",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_add_urls(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "ssp", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "ssp",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加一组云下载任务
 
@@ -6743,51 +6872,51 @@ class P115Client(P115OpenClient):
             if not payload:
                 raise ValueError("no `url` specified")
         return self._clouddownload_request(
-            payload, 
-            "add_task_urls", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "add_task_urls",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空云下载任务列表
 
@@ -6806,51 +6935,154 @@ class P115Client(P115OpenClient):
         if isinstance(payload, int):
             payload = {"flag": payload}
         return self._clouddownload_request(
-            payload, 
-            "task_clear", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "task_clear",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
+        )
+
+    @overload
+    def clouddownload_task_cnt(
+        self,
+        payload: dict | int = 0,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def clouddownload_task_cnt(
+        self,
+        payload: dict | int = 0,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def clouddownload_task_cnt(
+        self,
+        payload: dict | int = 0,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """获取当前正在运行的云下载任务数
+
+        GET https://clouddownload.115.com/?ac=get_task_cnt
+
+        :payload:
+            - flag: int = 0
+        """
+        if isinstance(payload, int):
+            payload = {"flag": payload}
+        return self._clouddownload_request(
+            payload,
+            "get_task_cnt",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
+        )
+
+    @overload
+    def clouddownload_task_count(
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def clouddownload_task_count(
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def clouddownload_task_count(
+        self,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """获取当前各种类型任务的计数
+
+        GET https://clouddownload.115.com/?ac=task_count
+        """
+        return self._clouddownload_request(
+            action="task_count",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_task_del(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_del(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_del(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除一组云下载任务（无论是否已经完成）
 
@@ -6869,51 +7101,51 @@ class P115Client(P115OpenClient):
             if not payload:
                 raise ValueError("no `hash` (info_hash) specified")
         return self._clouddownload_request(
-            payload, 
-            "task_del", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "task_del",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前的云下载任务列表
 
@@ -6928,51 +7160,51 @@ class P115Client(P115OpenClient):
             payload = {"page": payload}
         payload.setdefault("page_size", 30)
         return self._clouddownload_request(
-            payload, 
-            "task_lists", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "task_lists",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_task_pause(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_pause(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_pause(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """暂停云下载任务
 
@@ -6984,51 +7216,51 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"info_hash": payload}
         return self._clouddownload_request(
-            payload, 
-            "pause_task", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "pause_task",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_task_restart(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_restart(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_restart(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重试云下载任务
 
@@ -7040,51 +7272,51 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"info_hash": payload}
         return self._clouddownload_request(
-            payload, 
-            "restart", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "restart",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def clouddownload_task_resume(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def clouddownload_task_resume(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def clouddownload_task_resume(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "POST", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        method: str = "POST",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """恢复（被暂停的）云下载任务
 
@@ -7096,283 +7328,51 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"info_hash": payload}
         return self._clouddownload_request(
-            payload, 
-            "resume_task", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
-        )
-
-    @overload
-    def clouddownload_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
-    ) -> dict:
-        ...
-    @overload
-    def clouddownload_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
-    ) -> Coroutine[Any, Any, dict]:
-        ...
-    def clouddownload_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
-    ) -> dict | Coroutine[Any, Any, dict]:
-        """获取 sign 和 time 字段（各个添加任务的接口需要），以及其它信息
-
-        GET https://115.com/?ct=clouddownload&ac=space
-        """
-        api = complete_url(base_url=base_url, query={"ct": "clouddownload", "ac": "space"})
-        return self.request(url=api, async_=async_, **request_kwargs)
-
-    @overload
-    def clouddownload_sign_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
-    ) -> dict:
-        ...
-    @overload
-    def clouddownload_sign_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
-    ) -> Coroutine[Any, Any, dict]:
-        ...
-    def clouddownload_sign_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
-    ) -> dict | Coroutine[Any, Any, dict]:
-        """获取 sign 和 time 字段（各个添加任务的接口需要）
-
-        GET https://proapi.115.com/{app}/files/offlinesign
-        """
-        api = complete_url("/files/offlinesign", base_url=base_url, app=app)
-        return self.request(url=api, async_=async_, **request_kwargs)
-
-    @overload
-    def clouddownload_task(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
-    ) -> dict:
-        ...
-    @overload
-    def clouddownload_task(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
-    ) -> Coroutine[Any, Any, dict]:
-        ...
-    def clouddownload_task(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
-    ) -> dict | Coroutine[Any, Any, dict]:
-        """获取云下载任务信息
-
-        GET https://clouddownload.115.com/?ac=get_user_task
-
-        :payload:
-            - info_hash: str
-        """
-        if isinstance(payload, str):
-            payload = {"info_hash": payload}
-        return self._clouddownload_request(
-            payload, 
-            "get_user_task", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
-        )
-
-    @overload
-    def clouddownload_task_cnt(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
-    ) -> dict:
-        ...
-    @overload
-    def clouddownload_task_cnt(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
-    ) -> Coroutine[Any, Any, dict]:
-        ...
-    def clouddownload_task_cnt(
-        self, 
-        payload: dict | int = 0, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
-    ) -> dict | Coroutine[Any, Any, dict]:
-        """获取当前正在运行的云下载任务数
-
-        GET https://clouddownload.115.com/?ac=get_task_cnt
-
-        :payload:
-            - flag: int = 0
-        """
-        if isinstance(payload, int):
-            payload = {"flag": payload}
-        return self._clouddownload_request(
-            payload, 
-            "get_task_cnt", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
-        )
-
-    @overload
-    def clouddownload_task_count(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
-    ) -> dict:
-        ...
-    @overload
-    def clouddownload_task_count(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
-    ) -> Coroutine[Any, Any, dict]:
-        ...
-    def clouddownload_task_count(
-        self, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
-    ) -> dict | Coroutine[Any, Any, dict]:
-        """获取当前各种类型任务的计数
-
-        GET https://clouddownload.115.com/?ac=task_count
-        """
-        return self._clouddownload_request(
-            action="task_count", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "resume_task",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload # type: ignore
-    def clouddownload_torrent_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
-    def clouddownload_torrent_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
-    def clouddownload_torrent_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        method: str = "GET", 
-        type: Literal["", "web", "ssp"] = "web", 
-        base_url: str | Callable[[], str] = "https://clouddownload.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+    def clouddownload_torrent(
+        self,
+        payload: str | dict,
+        /,
+        method: str = "GET",
+        type: Literal["", "web", "ssp"] = "web",
+        base_url: str | Callable[[], str] = "https://clouddownload.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查看种子的文件列表等信息
 
@@ -7384,50 +7384,50 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"sha1": payload}
         return self._clouddownload_request(
-            payload, 
-            "torrent", 
-            method=method, 
-            type=type, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "torrent",
+            method=method,
+            type=type,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     ########## Diary API ##########
 
     @overload
     def diary_add(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_add(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_add(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建日记
 
@@ -7471,37 +7471,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除日记
 
@@ -7517,37 +7517,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取日记详情
 
@@ -7564,37 +7564,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_detail2(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_detail2(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_detail2(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取日记详情
 
@@ -7611,37 +7611,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_edit(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_edit(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_edit(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改日记
 
@@ -7682,34 +7682,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_get_config(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_get_config(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_get_config(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取日记可选项（例如天气、心情等）的取值集合
 
@@ -7720,37 +7720,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_get_latest_tags(
-        self, 
-        payload: int | str | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_get_latest_tags(
-        self, 
-        payload: int | str | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_get_latest_tags(
-        self, 
-        payload: int | str | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近使用过的标签列表
 
@@ -7770,37 +7770,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_get_tag_color(
-        self, 
-        payload: str | list | tuple | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | list | tuple | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_get_tag_color(
-        self, 
-        payload: str | list | tuple | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | list | tuple | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_get_tag_color(
-        self, 
-        payload: str | list | tuple | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | list | tuple | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取标签的颜色
 
@@ -7824,37 +7824,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取日记列表，此接口是对 `life_glist` 的封装
 
@@ -7874,37 +7874,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索日记
 
@@ -7923,37 +7923,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_settag(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_settag(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_settag(
-        self, 
-        payload: dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置日记标签
 
@@ -7973,37 +7973,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def diary_settop(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def diary_settop(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def diary_settop(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """切换日记的置顶状态，此接口是对 `life_set_top` 的封装
 
@@ -8022,37 +8022,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def download_folders_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_folders_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_folders_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取待下载的目录列表
 
@@ -8079,37 +8079,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def download_files_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_files_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_files_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取待下载的文件列表
 
@@ -8139,37 +8139,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def download_downfolder_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_downfolder_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_downfolder_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取待下载的文件列表
 
@@ -8189,40 +8189,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def download_url(
-        self, 
-        pickcode: int | str, 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: int | str,
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取文件的下载链接，此接口是对 `download_url_app` 的封装
 
@@ -8248,38 +8248,38 @@ class P115Client(P115OpenClient):
         """
         if app == "open":
             return self.download_url_open(
-                pickcode, 
-                strict=strict, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                pickcode,
+                strict=strict,
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
         pickcode = self.to_pickcode(pickcode)
         def gen_step():
             if app in ("web2", "video"):
                 resp = yield self.download_url_web2(
-                    pickcode, 
-                    user_agent=user_agent, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    pickcode,
+                    user_agent=user_agent,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 resp["pickcode"] = pickcode
                 check_response(resp)
                 url = resp["url"]
                 return P115URL(
-                    url, 
-                    id=self.to_id(pickcode), 
-                    pickcode=pickcode, 
-                    name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]), 
-                    is_dir=False, 
-                    headers=resp["headers"], 
+                    url,
+                    id=self.to_id(pickcode),
+                    pickcode=pickcode,
+                    name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]),
+                    is_dir=False,
+                    headers=resp["headers"],
                 )
             elif app in ("web", "desktop"):
                 resp = yield self.download_url_web(
-                    pickcode, 
-                    user_agent=user_agent, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    pickcode,
+                    user_agent=user_agent,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 resp["pickcode"] = pickcode
                 try:
@@ -8288,92 +8288,92 @@ class P115Client(P115OpenClient):
                     if strict:
                         raise
                 return P115URL(
-                    resp.get("file_url", ""), 
-                    id=int(resp["file_id"]), 
-                    pickcode=pickcode, 
-                    name=resp["file_name"], 
-                    size=int(resp["file_size"]), 
-                    is_dir=not resp["state"], 
-                    headers=resp["headers"], 
+                    resp.get("file_url", ""),
+                    id=int(resp["file_id"]),
+                    pickcode=pickcode,
+                    name=resp["file_name"],
+                    size=int(resp["file_size"]),
+                    is_dir=not resp["state"],
+                    headers=resp["headers"],
                 )
             else:
                 resp = yield self.download_url_app(
-                    pickcode, 
-                    user_agent=user_agent, 
-                    app=app, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    pickcode,
+                    user_agent=user_agent,
+                    app=app,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 resp["pickcode"] = pickcode
                 check_response(resp)
                 if "url" in resp["data"]:
                     url = resp["data"]["url"]
                     return P115URL(
-                        url, 
-                        pickcode=pickcode, 
-                        name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]), 
-                        is_dir=False, 
-                        headers=resp["headers"], 
+                        url,
+                        pickcode=pickcode,
+                        name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]),
+                        is_dir=False,
+                        headers=resp["headers"],
                     )
                 for fid, info in resp["data"].items():
                     url = info["url"]
                     if strict and not url:
                         throw(
-                            errno.EISDIR, 
-                            f"{fid} is a directory, with response {resp}", 
+                            errno.EISDIR,
+                            f"{fid} is a directory, with response {resp}",
                         )
                     return P115URL(
-                        url["url"] if url else "", 
-                        id=int(fid), 
-                        pickcode=info["pick_code"], 
-                        name=info["file_name"], 
-                        size=int(info["file_size"]), 
-                        sha1=info["sha1"], 
-                        is_dir=not url, 
-                        headers=resp["headers"], 
+                        url["url"] if url else "",
+                        id=int(fid),
+                        pickcode=info["pick_code"],
+                        name=info["file_name"],
+                        size=int(info["file_size"]),
+                        sha1=info["sha1"],
+                        is_dir=not url,
+                        headers=resp["headers"],
                     )
                 throw(
-                    errno.ENOENT, 
-                    f"no such pickcode: {pickcode!r}, with response {resp}", 
+                    errno.ENOENT,
+                    f"no such pickcode: {pickcode!r}, with response {resp}",
                 )
         return run_gen_step(gen_step, async_)
 
     @overload
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL]:
         ...
     @overload
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict[int, P115URL]]:
         ...
     def download_urls(
-        self, 
-        pickcodes: int | str | Iterable[int | str], 
-        /, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: int | str | Iterable[int | str],
+        /,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL] | Coroutine[Any, Any, dict[int, P115URL]]:
         """批量获取文件的下载链接，此接口是对 `download_url_app` 的封装
 
@@ -8399,11 +8399,11 @@ class P115Client(P115OpenClient):
         """
         if app == "open":
             return self.download_urls_open(
-                pickcodes, 
-                strict=strict, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                pickcodes,
+                strict=strict,
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
         if isinstance(pickcodes, (int, str)):
             pickcodes = self.to_pickcode(pickcodes)
@@ -8411,10 +8411,10 @@ class P115Client(P115OpenClient):
             pickcodes = ",".join(map(self.to_pickcode, pickcodes))
         def gen_step():
             resp = yield self.download_url_app(
-                pickcodes, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                pickcodes,
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
             resp["pickcode"] = pickcodes
             urls: dict[int, P115URL] = {}
@@ -8428,54 +8428,54 @@ class P115Client(P115OpenClient):
                         continue
                     fid = int(fid)
                     urls[fid] = P115URL(
-                        url["url"] if url else "", 
-                        id=fid, 
-                        pickcode=info["pick_code"], 
-                        name=info["file_name"], 
-                        size=int(info["file_size"]), 
-                        sha1=info["sha1"], 
-                        is_dir=not url, 
-                        headers=resp["headers"], 
+                        url["url"] if url else "",
+                        id=fid,
+                        pickcode=info["pick_code"],
+                        name=info["file_name"],
+                        size=int(info["file_size"]),
+                        sha1=info["sha1"],
+                        is_dir=not url,
+                        headers=resp["headers"],
                     )
             return urls
         return run_gen_step(gen_step, async_)
 
     @overload
     def download_url_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_url_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_url_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的下载链接
 
@@ -8522,45 +8522,45 @@ class P115Client(P115OpenClient):
         request_kwargs.setdefault("parse", parse)
         request_kwargs["data"] = {"data": rsa_encrypt(dumps(payload)).decode("ascii")}
         return self.request(
-            url=api, 
-            method="POST", 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def download_url_web(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_url_web(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_url_web(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的下载链接（网页版接口）
 
@@ -8600,37 +8600,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def download_url_web2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def download_url_web2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def download_url_web2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的下载链接（网页版接口）
 
@@ -8653,10 +8653,10 @@ class P115Client(P115OpenClient):
         def parse(resp, _: bytes, /) -> dict:
             if resp.status != 302:
                 return {
-                    "state": False, 
-                    "errno": 31003, 
-                    "message": "文件不存在或者是目录", 
-                    "response": {"status": resp.status, "headers": dict(resp.headers)}, 
+                    "state": False,
+                    "errno": 31003,
+                    "message": "文件不存在或者是目录",
+                    "response": {"status": resp.status, "headers": dict(resp.headers)},
                 }
             json = {"state": True, "url": resp.headers["location"]}
             if "Set-Cookie" in resp.headers:
@@ -8679,34 +8679,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_add_file(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_add_file(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_add_file(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """解压缩到某个目录，推荐直接用封装函数 `extract_file`
 
@@ -8734,37 +8734,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_add_file_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_add_file_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_add_file_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """解压缩到某个目录，推荐直接用封装函数 `extract_file`
 
@@ -8792,40 +8792,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_download_url(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str, 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str,
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def extract_download_url(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str, 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str,
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def extract_download_url(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str, 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str,
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取压缩包中文件的下载链接
 
@@ -8841,67 +8841,67 @@ class P115Client(P115OpenClient):
         def gen_step():
             if app in ("", "web", "desktop"):
                 resp = yield self.extract_download_url_web(
-                    {"pick_code": pickcode, "full_name": path.lstrip("/")}, 
-                    user_agent=user_agent, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    {"pick_code": pickcode, "full_name": path.lstrip("/")},
+                    user_agent=user_agent,
+                    async_=async_,
+                    **request_kwargs,
                 )
             else:
                 resp = yield self.extract_download_url_app(
-                    {"pick_code": pickcode, "full_name": path.lstrip("/")}, 
-                    user_agent=user_agent, 
-                    app=app, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    {"pick_code": pickcode, "full_name": path.lstrip("/")},
+                    user_agent=user_agent,
+                    app=app,
+                    async_=async_,
+                    **request_kwargs,
                 )
             from posixpath import basename
             check_response(resp)
             data = resp["data"]
             url = quote(data["url"], safe=":/?&=%#")
             return P115URL(
-                url, 
-                name=basename(path), 
-                path=path, 
-                headers=resp["headers"], 
+                url,
+                name=basename(path),
+                path=path,
+                headers=resp["headers"],
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def extract_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        user_agent: None | str = None, 
-        app: str = "android", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        user_agent: None | str = None,
+        app: str = "android",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩包中文件的下载链接
 
@@ -8927,37 +8927,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩包中文件的下载链接
 
@@ -8992,46 +8992,46 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_file(
-        self, 
-        /, 
-        pickcode: str, 
-        files: str | Iterable[str] = "", 
-        dirs: str | Iterable[str] = "", 
-        dirname: str = "", 
-        to_pid: int | str = 0, 
-        app: str = "web", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        files: str | Iterable[str] = "",
+        dirs: str | Iterable[str] = "",
+        dirname: str = "",
+        to_pid: int | str = 0,
+        app: str = "web",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_file(
-        self, 
-        /, 
-        pickcode: str, 
-        files: str | Iterable[str] = "", 
-        dirs: str | Iterable[str] = "", 
-        dirname: str = "", 
-        to_pid: int | str = 0, 
-        app: str = "web", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        files: str | Iterable[str] = "",
+        dirs: str | Iterable[str] = "",
+        dirname: str = "",
+        to_pid: int | str = 0,
+        app: str = "web",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_file(
-        self, 
-        /, 
-        pickcode: str, 
-        files: str | Iterable[str] = "", 
-        dirs: str | Iterable[str] = "", 
-        dirname: str = "", 
-        to_pid: int | str = 0, 
-        app: str = "web", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        files: str | Iterable[str] = "",
+        dirs: str | Iterable[str] = "",
+        dirname: str = "",
+        to_pid: int | str = 0,
+        app: str = "web",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """解压缩到某个目录，此方法是对 `extract_add_file` 的封装，推荐使用
 
@@ -9065,7 +9065,7 @@ class P115Client(P115OpenClient):
                     from p115client import check_response, P115Client
 
                     client = P115Client.from_path()
-                
+
                     resp = client.upload_file_sample(f.getbuffer(), filename='a.zip')
                     check_response(resp)
                     pickcode = resp["data"]["pick_code"]
@@ -9092,7 +9092,7 @@ class P115Client(P115OpenClient):
                     empty_file_hash = "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709"
                     files = (
                         info["pc"]
-                        for info in iter_download_nodes(client, pid, app="android", get_raw=True) 
+                        for info in iter_download_nodes(client, pid, app="android", get_raw=True)
                         if info["sha1"] == empty_file_hash
                     )
                     batch_delete(client, files)
@@ -9116,9 +9116,9 @@ class P115Client(P115OpenClient):
         dirname = dirname.strip("/")
         def gen_step():
             data = [
-                ("pick_code", pickcode), 
-                ("paths", "文件/" + dirname if dirname else "文件"), 
-                ("to_pid", to_pid), 
+                ("pick_code", pickcode),
+                ("paths", "文件/" + dirname if dirname else "文件"),
+                ("to_pid", to_pid),
             ]
             paths: list[str] = []
             add_path = paths.append
@@ -9143,11 +9143,11 @@ class P115Client(P115OpenClient):
                 extract_list = self.extract_list
                 while True:
                     resp = yield extract_list(
-                        pickcode=pickcode, 
-                        path=dirname, 
-                        next_marker=next_marker, 
-                        async_=async_, 
-                        **request_kwargs, 
+                        pickcode=pickcode,
+                        path=dirname,
+                        next_marker=next_marker,
+                        async_=async_,
+                        **request_kwargs,
                     )
                     check_response(resp)
                     for p in resp["data"]["list"]:
@@ -9158,7 +9158,7 @@ class P115Client(P115OpenClient):
                     if not (next_marker := resp["data"].get("next_marker")):
                         break
             data.extend(
-                ("extract_dir[]" if path.endswith("/") else "extract_file[]", path.strip("/")) 
+                ("extract_dir[]" if path.endswith("/") else "extract_file[]", path.strip("/"))
                 for path in paths
             )
             return extract_add_file(data, async_=async_, **request_kwargs)
@@ -9166,34 +9166,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_folders(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_folders(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_folders(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表（简略信息）
 
@@ -9209,37 +9209,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_folders_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_folders_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_folders_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表（简略信息）
 
@@ -9255,34 +9255,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_folders_post(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_folders_post(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_folders_post(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表是否可批量下载（最高支持1万的文件操作数量）
 
@@ -9298,37 +9298,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_folders_post_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_folders_post_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_folders_post_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表是否可批量下载（最高支持1万的文件操作数量）
 
@@ -9344,34 +9344,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表，推荐直接用封装函数 `extract_list`
 
@@ -9392,37 +9392,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表，推荐直接用封装函数 `extract_list_app`
 
@@ -9443,43 +9443,43 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_list(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str = "", 
-        next_marker: str = "", 
-        page_count: int = 999, 
-        app: str = "web", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str = "",
+        next_marker: str = "",
+        page_count: int = 999,
+        app: str = "web",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_list(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str = "", 
-        next_marker: str = "", 
-        page_count: int = 999, 
-        app: str = "web", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str = "",
+        next_marker: str = "",
+        page_count: int = 999,
+        app: str = "web",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_list(
-        self, 
-        /, 
-        pickcode: str, 
-        path: str = "", 
-        next_marker: str = "", 
-        page_count: int = 999, 
-        app: str = "web", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        path: str = "",
+        next_marker: str = "",
+        page_count: int = 999,
+        app: str = "web",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取压缩文件的文件列表，此方法是对 `extract_info` 的封装，推荐使用
 
@@ -9496,53 +9496,53 @@ class P115Client(P115OpenClient):
         if not 1 <= page_count <= 999:
             page_count = 999
         payload = {
-            "pick_code": pickcode, 
-            "file_name": path.strip("/"), 
-            "paths": "文件", 
-            "next_marker": next_marker, 
-            "page_count": page_count, 
+            "pick_code": pickcode,
+            "file_name": path.strip("/"),
+            "paths": "文件",
+            "next_marker": next_marker,
+            "page_count": page_count,
         }
         if app in ("", "web", "desktop", "aps"):
             extract_info: Callable = self.extract_info
         else:
             extract_info = self.extract_info_app
         return extract_info(
-            payload, 
-            app=app, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            app=app,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def extract_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 解压缩到目录 任务的进度
 
@@ -9558,37 +9558,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_progress_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_progress_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_progress_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 解压缩到目录 任务的进度
 
@@ -9604,34 +9604,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_push(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """推送一个解压缩任务给服务器，完成后，就可以查看压缩包的文件列表了
 
@@ -9651,37 +9651,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_push_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_push_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_push_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """推送一个解压缩任务给服务器，完成后，就可以查看压缩包的文件列表了
 
@@ -9701,34 +9701,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_push_progress(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_push_progress(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_push_progress(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查询解压缩任务的进度
 
@@ -9744,37 +9744,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def extract_push_progress_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def extract_push_progress_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def extract_push_progress_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查询解压缩任务的进度
 
@@ -9792,34 +9792,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_batch_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_batch_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_batch_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置文件或目录（显示时长等）
 
@@ -9833,37 +9833,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_batch_edit_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_batch_edit_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_batch_edit_app(
-        self, 
-        payload: list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置文件或目录（显示时长等）
 
@@ -9877,34 +9877,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_category_get(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_category_get(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_category_get(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """显示属性，可获取文件或目录的统计信息（提示：但得不到根目录的统计信息，所以 cid 为 0 时无意义）
 
@@ -9940,37 +9940,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_category_get_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_category_get_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_category_get_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """显示属性，可获取文件或目录的统计信息（提示：但得不到根目录的统计信息，所以 cid 为 0 时无意义）
 
@@ -10007,34 +10007,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_category_shortcut(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_category_shortcut(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_category_shortcut(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """快捷入口列表（罗列所有的快捷入口）
 
@@ -10052,37 +10052,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_category_shortcut_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        set: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        set: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_category_shortcut_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        set: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        set: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_category_shortcut_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        set: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        set: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """把一个目录设置或取消为快捷入口（快捷入口需要是目录）
 
@@ -10107,37 +10107,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_copy(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_copy(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_copy(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """复制文件或目录
 
@@ -10165,40 +10165,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_copy_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_copy_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_copy_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """复制文件或目录
 
@@ -10221,128 +10221,128 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_cover_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_cover_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_cover_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改封面，可以设置目录的封面，此接口是对 `fs_edit` 的封装
         """
         return self._fs_edit_set(
-            payload, 
-            "fid_cover", 
-            default=fid_cover, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "fid_cover",
+            default=fid_cover,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_cover_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_cover_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_cover_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        fid_cover: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        fid_cover: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改封面，可以设置目录的封面，此接口是对 `fs_files_update_app` 的封装
         """
         return self._fs_edit_set_app(
-            payload, 
-            "fid_cover", 
-            default=fid_cover, 
-            app=app, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "fid_cover",
+            default=fid_cover,
+            app=app,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_delete(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除文件或目录
 
@@ -10377,37 +10377,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_delete_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_delete_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_delete_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除文件或目录
 
@@ -10452,34 +10452,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_desc(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_desc(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_desc(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件或目录的备注
 
@@ -10499,37 +10499,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_desc_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_desc_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_desc_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件或目录的备注
 
@@ -10549,37 +10549,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_desc_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_desc_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_desc_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置备注，最多允许 65535 个字节 (64 KB 以内)，此接口是对 `fs_edit` 的封装
 
@@ -10587,50 +10587,50 @@ class P115Client(P115OpenClient):
             修改文件备注会更新文件的更新时间，即使什么也没改或者改为空字符串
         """
         return self._fs_edit_set(
-            payload, 
-            "file_desc", 
-            default=desc, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "file_desc",
+            default=desc,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_desc_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_desc_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_desc_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        desc: str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        desc: str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置备注，最多允许 65535 个字节 (64 KB 以内)，此接口是对 `fs_files_update_app` 的封装
 
@@ -10638,45 +10638,45 @@ class P115Client(P115OpenClient):
             修改文件备注会更新文件的更新时间，即使什么也没改或者改为空字符串
         """
         return self._fs_edit_set_app(
-            payload, 
-            "file_desc", 
-            desc, 
-            app=app, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "file_desc",
+            desc,
+            app=app,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_dir_getid(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_dir_getid(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_dir_getid(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """由路径获取对应的 id（但只能获取目录，不能获取文件）
 
@@ -10692,34 +10692,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_dir_getid2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_dir_getid2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_dir_getid2(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """由路径获取对应的 id（但只能获取目录，不能获取文件）
 
@@ -10737,37 +10737,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_dir_getid_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_dir_getid_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_dir_getid_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """由路径获取对应的 id（但只能获取目录，不能获取文件）
 
@@ -10783,34 +10783,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文档的信息和下载链接
 
@@ -10829,37 +10829,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_document_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_document_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_document_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文档的信息和下载链接
 
@@ -10878,34 +10878,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_edit(
-        self, 
-        payload: list | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: list | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置文件或目录（备注、标签、封面等）
 
@@ -10926,40 +10926,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def _fs_edit_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _fs_edit_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _fs_edit_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置文件或目录（备注、标签、封面等），此接口是对 `fs_edit` 的封装
         """
@@ -10977,43 +10977,43 @@ class P115Client(P115OpenClient):
 
     @overload
     def _fs_edit_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def _fs_edit_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def _fs_edit_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        attr: str, 
-        default: Any = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        attr: str,
+        default: Any = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置文件或目录（备注、标签、封面等），此接口是对 `fs_files_update_app` 的封装
         """
@@ -11028,43 +11028,43 @@ class P115Client(P115OpenClient):
             payload = [(f"file_id[{i}]", fid) for i, fid in enumerate(payload)]
             payload.append((attr, default))
         return self.fs_files_update_app(
-            payload, 
-            async_=async_, 
-            app=app, 
-            base_url=base_url, 
-            **request_kwargs, 
+            payload,
+            async_=async_,
+            app=app,
+            base_url=base_url,
+            **request_kwargs,
         )
 
     @overload
     def fs_export_dir(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_export_dir(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_export_dir(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """导出目录树
 
@@ -11086,37 +11086,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_export_dir_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_export_dir_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_export_dir_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """导出目录树
 
@@ -11138,34 +11138,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_export_dir_status(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_export_dir_status(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_export_dir_status(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取导出目录树的完成情况
 
@@ -11181,37 +11181,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_export_dir_status_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_export_dir_status_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_export_dir_status_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取导出目录树的完成情况
 
@@ -11227,34 +11227,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_file(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_file(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_file(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件或目录的基本信息
 
@@ -11275,37 +11275,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_file_skim(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_file_skim(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_file_skim(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        method: str = "GET", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        method: str = "GET",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件或目录的简略信息
 
@@ -11330,34 +11330,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息
 
@@ -11434,8 +11434,8 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default> 💡 是否只搜索当前目录
             - custom_order: 0 | 1 = <default> 💡 启用自定义排序，如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 1
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - date: str = <default> 💡 筛选日期
@@ -11500,8 +11500,8 @@ class P115Client(P115OpenClient):
         if isinstance(payload, (int, str)):
             payload = {"cid": payload}
         payload = {
-            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0, 
-            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload, 
+            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0,
+            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload,
         }
         if payload.keys() & frozenset(("asc", "fc_mix", "o")):
             payload["custom_order"] = 1
@@ -11509,37 +11509,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息
 
@@ -11600,8 +11600,8 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default>   💡 是否只显示当前目录
             - custom_order: 0 | 1 | 2 = <default> 💡 是否使用记忆排序。如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 2
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - date: str = <default> 💡 筛选日期
@@ -11661,8 +11661,8 @@ class P115Client(P115OpenClient):
         if isinstance(payload, (int, str)):
             payload = {"cid": payload}
         payload = {
-            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0, 
-            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload, 
+            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0,
+            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload,
         }
         if payload.keys() & frozenset(("asc", "fc_mix", "o")):
             payload["custom_order"] = 2
@@ -11670,37 +11670,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_app2(
-        self, 
-        payload: None| int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None| int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_app2(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_app2(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息
 
@@ -11741,10 +11741,10 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default> 💡 是否只搜索当前目录
             - custom_order: 0 | 1 | 2 = <default> 💡 启用自定义排序，如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 2
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
- 
+
             - date: str = <default> 💡 筛选日期
             - fc_mix: 0 | 1 = <default> 💡 是否目录和文件混合，如果为 0 则目录在前（目录置顶）
             - fields: str = <default>
@@ -11802,8 +11802,8 @@ class P115Client(P115OpenClient):
         if isinstance(payload, (int, str)):
             payload = {"cid": payload}
         payload = {
-            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0, 
-            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload, 
+            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0,
+            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload,
         }
         if payload.keys() & frozenset(("asc", "fc_mix", "o")):
             payload["custom_order"] = 2
@@ -11811,34 +11811,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_aps(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_aps(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_aps(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息
 
@@ -11882,8 +11882,8 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default> 💡 是否只搜索当前目录
             - custom_order: 0 | 1 = <default> 💡 启用自定义排序，如果指定了 "asc"、"fc_mix" 中其一，则此参数会被自动设置为 1
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - date: str = <default> 💡 筛选日期
@@ -11936,8 +11936,8 @@ class P115Client(P115OpenClient):
         if isinstance(payload, (int, str)):
             payload = {"cid": payload}
         payload = {
-            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0, 
-            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload, 
+            "aid": 1, "count_folders": 1, "limit": 32, "offset": 0,
+            "record_open_time": 1, "show_dir": 1, "cid": 0, **payload,
         }
         if payload.keys() & frozenset(("asc", "fc_mix")):
             payload["custom_order"] = 1
@@ -11945,34 +11945,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_blank_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_blank_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_blank_document(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建空白 office 文件
 
@@ -11991,34 +11991,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_cover(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_cover(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_cover(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查看是否有封面
 
@@ -12035,34 +12035,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_cover_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_cover_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_cover_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """是否生成封面
 
@@ -12080,34 +12080,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_image(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_image(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_image(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的图片列表和基本信息
 
@@ -12145,37 +12145,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_image_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_image_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_image_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的图片列表和基本信息
 
@@ -12222,34 +12222,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_media(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_media(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_media(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息（不含目录）
 
@@ -12312,37 +12312,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_media_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_media_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_media_app(
-        self, 
-        payload: None | int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中的文件列表和基本信息（不含目录）
 
@@ -12402,34 +12402,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_property(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_property(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_property(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件属性
 
@@ -12450,34 +12450,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_recent_docs(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_recent_docs(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_recent_docs(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近上传的文档
 
@@ -12496,37 +12496,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_recent_docs_app(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_recent_docs_app(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_recent_docs_app(
-        self, 
-        payload: int | dict = 1000, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1000,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近上传的文档
 
@@ -12545,34 +12545,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_second_type(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_second_type(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_second_type(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中某个文件类型的扩展名的（去重）列表
 
@@ -12600,37 +12600,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_second_type_app(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_second_type_app(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_second_type_app(
-        self, 
-        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[1, 2, 3, 4, 5, 6, 7] | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录中某个文件类型的扩展名的（去重）列表
 
@@ -12658,37 +12658,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_files_update_app(
-        self, 
-        payload: int | str | tuple[int | str] | list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | tuple[int | str] | list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_files_update_app(
-        self, 
-        payload: int | str | tuple[int | str] | list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | tuple[int | str] | list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_files_update_app(
-        self, 
-        payload: int | str | tuple[int | str] | list | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | tuple[int | str] | list | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置（若干个）文件或目录（名字、备注、标签等）
 
@@ -12717,34 +12717,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_folder_playlong(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_folder_playlong(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_folder_playlong(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取目录内文件总的播放时长
 
@@ -12760,37 +12760,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_folder_playlong_set(
-        self, 
-        /, 
-        ids: int | str | Iterable[int | str], 
-        is_set: Literal[0, 1] = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        ids: int | str | Iterable[int | str],
+        is_set: Literal[0, 1] = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_folder_playlong_set(
-        self, 
-        /, 
-        ids: int | str | Iterable[int | str], 
-        is_set: Literal[0, 1] = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        ids: int | str | Iterable[int | str],
+        is_set: Literal[0, 1] = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_folder_playlong_set(
-        self, 
-        /, 
-        ids: int | str | Iterable[int | str], 
-        is_set: Literal[0, 1] = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        ids: int | str | Iterable[int | str],
+        is_set: Literal[0, 1] = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """显示或取消目录内文件总的播放时长，此接口是对 `fs_batch_edit` 的封装
 
@@ -12807,37 +12807,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_folder_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_folder_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_folder_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置文件或目录，或者创建目录
 
@@ -12860,37 +12860,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_hide(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_hide(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_hide(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """隐藏或者取消隐藏某些文件或目录
 
@@ -12912,40 +12912,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_hide_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_hide_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_hide_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        hidden: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        hidden: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """隐藏或者取消隐藏某些文件或目录
 
@@ -12965,34 +12965,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_hidden_switch(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_hidden_switch(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_hidden_switch(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """切换隐藏模式
 
@@ -13022,37 +13022,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_hidden_switch_app(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_hidden_switch_app(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_hidden_switch_app(
-        self, 
-        payload: bool | int | str | dict = False, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | int | str | dict = False,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """切换隐藏模式
 
@@ -13076,34 +13076,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的观看历史，主要用于视频
 
@@ -13125,37 +13125,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取历史记录
 
@@ -13177,34 +13177,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_clean(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_clean(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_clean(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空历史记录
 
@@ -13233,34 +13233,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_delete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_delete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_delete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除历史记录
 
@@ -13278,37 +13278,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_delete_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_delete_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_delete_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除历史记录
 
@@ -13326,37 +13326,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_clean_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_clean_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_clean_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空历史记录
 
@@ -13385,34 +13385,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """历史记录列表
 
@@ -13442,37 +13442,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """历史记录列表
 
@@ -13502,34 +13502,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_move_target_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_move_target_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_move_target_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """最近移动记录
 
@@ -13561,8 +13561,8 @@ class P115Client(P115OpenClient):
             - asc: 0 | 1 = <default> 💡 是否升序排列。0:降序 1:升序
             - custom_order: 0 | 1 | 2 = <default> 💡 是否使用记忆排序。如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 2
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - date: str = <default> 💡 筛选日期
@@ -13594,34 +13594,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_receive_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_receive_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_receive_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """接收列表
 
@@ -13639,37 +13639,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_receive_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_receive_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_receive_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """接收列表
 
@@ -13687,37 +13687,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_rename_list(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_rename_list(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_rename_list(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重命名历史记录
 
@@ -13738,40 +13738,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_rename_list_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_rename_list_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_rename_list_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重命名历史记录
 
@@ -13792,34 +13792,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新文件的观看历史，主要用于视频和音频
 
@@ -13845,37 +13845,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_history_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_history_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_history_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新文件的观看历史，主要用于视频
 
@@ -13901,34 +13901,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_image(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_image(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_image(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取图片的各种链接
 
@@ -13944,34 +13944,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_imagedata(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://imgjump.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://imgjump.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_imagedata(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://imgjump.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://imgjump.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_imagedata(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://imgjump.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://imgjump.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取图片的分辨率等信息
 
@@ -13987,34 +13987,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_index_info(
-        self, 
-        payload: Literal[0, 1] | bool | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | bool | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_index_info(
-        self, 
-        payload: Literal[0, 1] | bool | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | bool | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_index_info(
-        self, 
-        payload: Literal[0, 1] | bool | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | bool | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前已用空间、可用空间、登录设备等信息
 
@@ -14030,34 +14030,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_add(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_add(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_add(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加标签（可以接受多个）
 
@@ -14077,37 +14077,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_add_app(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_add_app(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_add_app(
-        self, 
-        payload: str | Iterable[str] | dict | list[tuple], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict | list[tuple],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加标签（可以接受多个）
 
@@ -14127,34 +14127,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_del(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除标签
 
@@ -14170,37 +14170,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_del_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_del_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_del_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除标签
 
@@ -14216,34 +14216,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_edit(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_edit(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_edit(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """编辑标签
 
@@ -14260,37 +14260,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_edit_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_edit_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_edit_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """编辑标签
 
@@ -14307,34 +14307,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_list(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_list(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_list(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列标签列表（如果要获取做了标签的文件列表，用 `fs_search` 接口）
 
@@ -14360,37 +14360,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_list_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_list_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_list_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列标签列表（如果要获取做了标签的文件列表，用 `fs_search` 接口）
 
@@ -14416,37 +14416,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置标签，此接口是对 `fs_edit` 的封装
 
@@ -14461,50 +14461,50 @@ class P115Client(P115OpenClient):
                 client.fs_label_set(id, 1)
         """
         return self._fs_edit_set(
-            payload, 
-            "file_label", 
-            default=label, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "file_label",
+            default=label,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_label_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        label: int | str = "", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        label: int | str = "",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置标签，此接口是对 `fs_files_update_app` 的封装
 
@@ -14512,45 +14512,45 @@ class P115Client(P115OpenClient):
             这个接口会把标签列表进行替换，而不是追加
         """
         return self._fs_edit_set_app(
-            payload, 
-            "file_label", 
-            default=label, 
-            app=app, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "file_label",
+            default=label,
+            app=app,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_label_batch(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_batch(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_batch(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置标签
 
@@ -14573,37 +14573,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_label_batch_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_label_batch_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_label_batch_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量设置标签
 
@@ -14626,34 +14626,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_makedirs(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_makedirs(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_makedirs(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建目录（会尝试创建所有的中间节点）
 
@@ -14678,40 +14678,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_makedirs_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_makedirs_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_makedirs_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "chrome", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        app: str = "chrome",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建目录（会尝试创建所有的中间节点）
 
@@ -14740,37 +14740,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_mkdir(
-        self, 
-        payload: str | dict, 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建目录
 
@@ -14793,40 +14793,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_mkdir_app(
-        self, 
-        payload: dict | str, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_mkdir_app(
-        self, 
-        payload: dict | str, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_mkdir_app(
-        self, 
-        payload: dict | str, 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建目录，此接口是对 `fs_folder_update_app` 的封装
 
@@ -14838,46 +14838,46 @@ class P115Client(P115OpenClient):
             payload = {"name": payload}
         payload.setdefault("pid", pid)
         return self.fs_folder_update_app(
-            payload, 
-            app=app, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            app=app,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_move(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_move(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_move(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """移动文件或目录
 
@@ -14913,40 +14913,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_move_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_move_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_move_app(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """移动文件或目录
 
@@ -14970,37 +14970,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_move_check_conflict(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_move_check_conflict(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_move_check_conflict(
-        self, 
-        payload: int | str | dict | Iterable[int | str], 
-        /, 
-        pid: int | str = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict | Iterable[int | str],
+        /,
+        pid: int | str = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查移动文件或目录时，是否有冲突
 
@@ -15025,34 +15025,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_move_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_move_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_move_progress(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """移动任务的进度
 
@@ -15068,34 +15068,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取音乐信息（其实只有一个下载链接）
 
@@ -15117,37 +15117,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取音乐信息
 
@@ -15168,34 +15168,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_file_exist(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_file_exist(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_file_exist(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查音乐文件是否存在
 
@@ -15214,31 +15214,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_fond_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_fond_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_fond_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列星标听单
 
@@ -15249,34 +15249,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_fond_list_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_fond_list_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_fond_list_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列星标听单
 
@@ -15287,34 +15287,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_fond_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_fond_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_fond_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """给听单加减星标
 
@@ -15332,34 +15332,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_include_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_include_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_include_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """包含音乐的目录列表（专属文件）
 
@@ -15379,37 +15379,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_include_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_include_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_include_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """包含音乐的目录列表（专属文件）
 
@@ -15429,34 +15429,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取音乐封面等信息
 
@@ -15472,37 +15472,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取音乐封面等信息
 
@@ -15518,34 +15518,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_list(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单中的文件
 
@@ -15564,37 +15564,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_list_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_list_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_list_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单中的文件
 
@@ -15613,34 +15613,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_new(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_new(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_new(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单或听单中的文件
 
@@ -15660,37 +15660,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_new_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_new_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_new_app(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单或听单中的文件
 
@@ -15708,34 +15708,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """从听单添加或移除音乐，或者给音乐加减星标
 
@@ -15761,34 +15761,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_status(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_status(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_status(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """音乐状态
 
@@ -15804,34 +15804,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_topic_listnew(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_topic_listnew(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_topic_listnew(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单
 
@@ -15854,37 +15854,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_topic_listnew_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_topic_listnew_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_topic_listnew_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列听单
 
@@ -15906,34 +15906,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_music_topic_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_music_topic_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_music_topic_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改听单
 
@@ -15951,34 +15951,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_office_check_complete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_office_check_complete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_office_check_complete(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查 office 保存任务完成情况
 
@@ -15994,34 +15994,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_office_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_office_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_office_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """初始化 office
 
@@ -16037,34 +16037,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_office_save(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_office_save(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_office_save(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """保存 office，即提交一个 office 的保存任务
 
@@ -16088,34 +16088,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_order_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_order_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_order_set(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置某个目录内文件的默认排序
 
@@ -16144,37 +16144,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_order_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_order_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_order_set_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置某个目录内文件的默认排序
 
@@ -16206,34 +16206,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_preview(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_preview(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_preview(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """文档预览
 
@@ -16250,34 +16250,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_rename(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重命名文件或目录
 
@@ -16299,37 +16299,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_rename_app(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_rename_app(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_rename_app(
-        self, 
-        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]], 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: tuple[int | str, str] | dict | Iterable[tuple[int | str, str]],
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """重命名文件或目录
 
@@ -16350,34 +16350,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_rename_set_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_rename_set_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_rename_set_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """提交模拟批量重命名请求（提示：较为复杂，自己抓包研究）
 
@@ -16388,34 +16388,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_rename_reset_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_rename_reset_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_rename_reset_names(
-        self, 
-        payload: dict | list[tuple[str, str | int]], 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list[tuple[str, str | int]],
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取批量重命名的模拟结果（提示：较为复杂，自己抓包研究）
 
@@ -16426,34 +16426,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_repeat_sha1(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_repeat_sha1(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_repeat_sha1(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查找重复文件（罗列除此以外的 sha1 相同的文件）
 
@@ -16473,37 +16473,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_repeat_sha1_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_repeat_sha1_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_repeat_sha1_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查找重复文件（罗列除此以外的 sha1 相同的文件）
 
@@ -16523,37 +16523,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_score_set(
-        self, 
-        file_id: int | str | Iterable[int | str], 
-        /, 
-        score: int = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        file_id: int | str | Iterable[int | str],
+        /,
+        score: int = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_score_set(
-        self, 
-        file_id: int | str | Iterable[int | str], 
-        /, 
-        score: int = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        file_id: int | str | Iterable[int | str],
+        /,
+        score: int = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_score_set(
-        self, 
-        file_id: int | str | Iterable[int | str], 
-        /, 
-        score: int = 0, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        file_id: int | str | Iterable[int | str],
+        /,
+        score: int = 0,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """给文件或目录评分
 
@@ -16571,34 +16571,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_search(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索文件或目录
 
@@ -16678,44 +16678,44 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"search_value": payload}
         payload = {
-            "aid": 1, "cid": 0, "limit": 32, "offset": 0, 
-            "show_dir": 1, "search_value": ".", **payload, 
+            "aid": 1, "cid": 0, "limit": 32, "offset": 0,
+            "show_dir": 1, "search_value": ".", **payload,
         }
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
     def fs_search_app(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_search_app(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_search_app(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索文件或目录
 
@@ -16786,44 +16786,44 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"search_value": payload}
         payload = {
-            "aid": 1, "cid": 0, "limit": 32, "offset": 0, 
-            "show_dir": 1, "search_value": ".", **payload, 
+            "aid": 1, "cid": 0, "limit": 32, "offset": 0,
+            "show_dir": 1, "search_value": ".", **payload,
         }
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
     def fs_search_app2(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_search_app2(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_search_app2(
-        self, 
-        payload: str | dict = ".", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = ".",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索文件或目录
 
@@ -16894,41 +16894,41 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"search_value": payload}
         payload = {
-            "aid": 1, "cid": 0, "limit": 32, "offset": 0, 
-            "show_dir": 1, "search_value": ".", **payload, 
+            "aid": 1, "cid": 0, "limit": 32, "offset": 0,
+            "show_dir": 1, "search_value": ".", **payload,
         }
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
     def fs_shasearch(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_shasearch(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_shasearch(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """通过 sha1 搜索文件
 
@@ -16947,128 +16947,128 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_show_play_long_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_show_play_long_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_show_play_long_set(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为目录设置显示时长，此接口是对 `fs_edit` 的封装
         """
         return self._fs_edit_set(
-            payload, 
-            "show_play_long", 
-            default=int(show), 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "show_play_long",
+            default=int(show),
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_show_play_long_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_show_play_long_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_show_play_long_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | list[tuple] | dict, 
-        /, 
-        show: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | list[tuple] | dict,
+        /,
+        show: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为目录设置显示时长，此接口是对 `fs_files_update_app` 的封装
         """
         return self._fs_edit_set_app(
-            payload, 
-            "show_play_long", 
-            default=int(show), 
-            app=app, 
-            base_url=base_url, 
-            async_=async_, 
-            **request_kwargs, 
+            payload,
+            "show_play_long",
+            default=int(show),
+            app=app,
+            base_url=base_url,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_space_report(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_space_report(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_space_report(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取数据报告（截至月末数据，分组聚合）
 
@@ -17092,31 +17092,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_space_summury(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_space_summury(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_space_summury(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取数据报告（当前数据，分组聚合，但并不精确）
 
@@ -17127,37 +17127,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_star_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置或取消星标
 
@@ -17181,40 +17181,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_star_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_star_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_star_set_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        star: bool = True, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        star: bool = True,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """为文件或目录设置或取消星标
 
@@ -17240,31 +17240,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_storage_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_storage_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_storage_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取使用空间的统计数据（最简略，如需更详细，请用 `fs.user_space_info()`）
 
@@ -17275,34 +17275,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_supervision(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_supervision(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_supervision(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """通过 pickcode 获取文件信息
 
@@ -17322,37 +17322,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_supervision_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_supervision_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_supervision_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """通过 pickcode 获取文件信息
 
@@ -17372,37 +17372,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_sys_dir(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_sys_dir(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_sys_dir(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取系统目录（在根目录下，使用 `fs_files` 接口罗列时，数目体现在返回值的 `sys_count` 字段）
 
@@ -17418,37 +17418,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_top_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        top: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        top: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_top_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        top: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        top: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_top_set(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        top: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        top: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """文件或目录置顶
 
@@ -17469,34 +17469,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频信息和 m3u8 链接列表
 
@@ -17524,37 +17524,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频信息和 m3u8 链接列表
 
@@ -17579,42 +17579,42 @@ class P115Client(P115OpenClient):
         request_kwargs.setdefault("parse", parse)
         request_kwargs["data"] = {"data": rsa_encrypt(dumps(payload)).decode("ascii")}
         return self.request(
-            url=api, 
-            method="POST", 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def fs_video_def_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_def_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_def_set(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """切换视频清晰度
 
@@ -17633,37 +17633,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_m3u8(
-        self, 
-        /, 
-        pickcode: str, 
-        definition: int = 0, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        definition: int = 0,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bytes:
         ...
     @overload
     def fs_video_m3u8(
-        self, 
-        /, 
-        pickcode: str, 
-        definition: int = 0, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        definition: int = 0,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bytes]:
         ...
     def fs_video_m3u8(
-        self, 
-        /, 
-        pickcode: str, 
-        definition: int = 0, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        pickcode: str,
+        definition: int = 0,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bytes | Coroutine[Any, Any, bytes]:
         """获取视频的 m3u8 文件列表，此接口必须使用 web 的 cookies
 
@@ -17691,34 +17691,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_subtitle(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频字幕
 
@@ -17734,37 +17734,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_subtitle_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_subtitle_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_subtitle_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频字幕
 
@@ -17780,34 +17780,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_subtitle_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_subtitle_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_subtitle_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置视频字幕
 
@@ -17824,37 +17824,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def fs_video_transcode(
-        self, 
-        payload: dict | str, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://transcode.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://transcode.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def fs_video_transcode(
-        self, 
-        payload: dict | str, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://transcode.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://transcode.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def fs_video_transcode(
-        self, 
-        payload: dict | str, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://transcode.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://transcode.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取视频的转码进度
 
@@ -17874,37 +17874,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_batch_delete(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_batch_delete(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_batch_delete(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量删除操作历史：批量删除 115 生活事件列表
 
@@ -17917,43 +17917,43 @@ class P115Client(P115OpenClient):
         if not isinstance(payload, dict):
             payload = {"delete_data": (b"[%s]" % b",".join(map(dumps, payload))).decode("utf-8")}
         return self.request(
-            url=api, 
-            method="POST", 
-            data=payload, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data=payload,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def life_behavior_detail(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_behavior_detail(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_behavior_detail(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
         *,
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 `P115Client.life_list` 操作记录明细
 
@@ -18001,37 +18001,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_behavior_detail_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_behavior_detail_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_behavior_detail_app(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
+        self,
+        payload: str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
         *,
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 `P115Client.life_list` 操作记录明细
 
@@ -18076,37 +18076,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_behavior_doc_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_behavior_doc_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_behavior_doc_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """推送事件：浏览文档 "browse_document"
 
@@ -18127,37 +18127,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_behavior_img_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_behavior_img_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_behavior_img_post_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """推送事件：浏览图片 "browse_image"
 
@@ -18178,34 +18178,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_calendar_getoption(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_calendar_getoption(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_calendar_getoption(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 115 生活的开关设置
 
@@ -18219,34 +18219,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_calendar_getoption2(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_calendar_getoption2(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_calendar_getoption2(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 115 生活的开关设置
 
@@ -18257,37 +18257,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_calendar_setoption(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_calendar_setoption(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_calendar_setoption(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置 115 生活的开关选项
 
@@ -18313,37 +18313,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_calendar_setoption2(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_calendar_setoption2(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_calendar_setoption2(
-        self, 
-        payload: Literal[0, 1] | dict = 1, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Literal[0, 1] | dict = 1,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置 115 生活的开关选项
 
@@ -18369,37 +18369,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_cdlist(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_cdlist(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_cdlist(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取节假日等
 
@@ -18426,37 +18426,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量获取图片的预览图链接
 
@@ -18487,43 +18487,43 @@ class P115Client(P115OpenClient):
         elif isinstance(payload, tuple):
             payload = [("rs[]", s) for s in payload]
         return self.request(
-            url=api, 
-            method="POST", 
-            data=payload, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data=payload,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def life_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量获取图片的预览图链接
 
@@ -18554,46 +18554,46 @@ class P115Client(P115OpenClient):
         elif isinstance(payload, tuple):
             payload = [("rs[]", s) for s in payload]
         return self.request(
-            url=api, 
-            method="POST", 
-            data=payload, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data=payload,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def life_clear_history(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_clear_history(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_clear_history(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空操作历史：清空 115 生活事件列表
 
@@ -18609,37 +18609,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_glist(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_glist(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_glist(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取备忘（记录/笔记/记事）、日记或日程的列表
 
@@ -18671,37 +18671,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_has_data(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_has_data(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_has_data(
-        self, 
-        payload: int | dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取有数据的那几天零点的时间戳
 
@@ -18719,37 +18719,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列登录和增删改操作记录（最新几条）
 
@@ -18760,7 +18760,7 @@ class P115Client(P115OpenClient):
 
         .. attention::
             此接口正在被 `P115Client.life_recent_operations` 取代
-            
+
         .. hint::
             引用：https://cdnres.115.com/life/m_r/web/static_v11.0/homepage/lifetime.js
 
@@ -18802,11 +18802,11 @@ class P115Client(P115OpenClient):
                 .. code:: python
 
                     {
-                        'file':['upload_file', 'upload_image_file', 'backup_album', 'sync_communication', 
-                                'receive_files', 'star_file', 'radar_sharing', 'file_search', 'move_file', 
-                                'move_image_file', 'star_image', 'del_photo_image', 'del_similar_image', 
-                                'generate_smart_albums', 'new_person_albums', 'del_person_albums', 
-                                'generate_photo_story', 'share_photo', 'folder_rename', 'folder_label', 
+                        'file':['upload_file', 'upload_image_file', 'backup_album', 'sync_communication',
+                                'receive_files', 'star_file', 'radar_sharing', 'file_search', 'move_file',
+                                'move_image_file', 'star_image', 'del_photo_image', 'del_similar_image',
+                                'generate_smart_albums', 'new_person_albums', 'del_person_albums',
+                                'generate_photo_story', 'share_photo', 'folder_rename', 'folder_label',
                                 'new_folder', 'copy_folder', 'delete_file'],
                         'review':['browse_video', 'browse_document', 'browse_audio', 'browse_image'],
                         'edit':['publish_record', 'publish_calendar', 'publish_home'],
@@ -18865,37 +18865,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_recent_browse(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_recent_browse(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_recent_browse(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近浏览记录
 
@@ -18913,37 +18913,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_recent_operation_items(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_recent_operation_items(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_recent_operation_items(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近操作记录详细
 
@@ -18979,7 +18979,7 @@ class P115Client(P115OpenClient):
                 - "copy_file":        23 💡 复制文件
                 - "file_rename":      24 💡 文件改名
 
-            - date: str 💡 日期，格式为 YYYY-MM-DD，若指定则只拉取这一天的数据                
+            - date: str 💡 日期，格式为 YYYY-MM-DD，若指定则只拉取这一天的数据
             - start: int = 0
             - limit: int = 1_000
         """
@@ -18991,37 +18991,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_recent_operations(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_recent_operations(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_recent_operations(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近操作记录
 
@@ -19048,37 +19048,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_recent_operations_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_recent_operations_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_recent_operations_clear(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """清空最近操作记录
 
@@ -19094,37 +19094,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_recent_operations_del(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_recent_operations_del(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_recent_operations_del(
-        self, 
-        payload: Iterable[dict] | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: Iterable[dict] | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量删除最近操作记录
 
@@ -19140,37 +19140,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def life_set_top(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def life_set_top(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def life_set_top(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://life.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://life.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """切换备忘（记录/笔记/记事）、日记或日程的置顶状态
 
@@ -19190,25 +19190,25 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_app(
-        self, 
-        /, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> None | str:
         ...
     @overload
     def login_app(
-        self, 
-        /, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, None | str]:
         ...
     def login_app(
-        self, 
-        /, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> None | str | Coroutine[Any, Any, None | str]:
         """获取当前的登录设备名，如果为 None，说明未能获得
         """
@@ -19226,37 +19226,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_open_auth_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_open_auth_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_open_auth_detail(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取某个开放应用的授权信息
 
@@ -19272,34 +19272,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_open_auth_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_open_auth_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_open_auth_list(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取所有授权的开放应用的列表
 
@@ -19310,37 +19310,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_open_deauth(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_open_deauth(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_open_deauth(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """取消某个开放应用的授权
 
@@ -19356,34 +19356,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_check_sso(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_check_sso(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_check_sso(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查当前 cookies 的登录状态信息，并且自最近一次登录的 60 秒后，使当前设备下除最近一次登录外的所有 cookies 失效
 
@@ -19394,25 +19394,25 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_device(
-        self, 
-        /, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> None | dict:
         ...
     @overload
     def login_device(
-        self, 
-        /, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, None | dict]:
         ...
     def login_device(
-        self, 
-        /, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> None | dict | Coroutine[Any, Any, None | dict]:
         """获取当前的登录设备的信息，如果为 None，也不代表当前的 cookies 被下线，只能说明有更晚的登录到同一设备
         """
@@ -19426,34 +19426,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_devices(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_devices(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_devices(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取所有的已登录设备的信息，不过当前的 cookies 必须是登录状态（未退出或未失效）
 
@@ -19464,34 +19464,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取登录信息
 
@@ -19502,37 +19502,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_log(
-        self, 
-        payload: dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_log(
-        self, 
-        payload: dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_log(
-        self, 
-        payload: dict = {}, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取登录信息日志列表
 
@@ -19548,34 +19548,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_online(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def login_online(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def login_online(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """当前登录的设备总数和最近登录的设备
 
@@ -19586,31 +19586,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def login_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> bool:
         ...
     @overload
     def login_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, bool]:
         ...
     def login_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> bool | Coroutine[Any, Any, bool]:
         """检查是否已登录
 
@@ -19635,37 +19635,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def logout(
-        self, 
-        /, 
-        app: None | str = "android", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = "android",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> None:
         ...
     @overload
     def logout(
-        self, 
-        /, 
-        app: None | str = "android", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = "android",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, None]:
         ...
     def logout(
-        self, 
-        /, 
-        app: None | str = "android", 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = "android",
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> None | Coroutine[Any, Any, None]:
         """当前设备退出登录状态
 
@@ -19679,34 +19679,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def logout_by_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> None:
         ...
     @overload
     def logout_by_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, None]:
         ...
     def logout_by_app(
-        self, 
-        /, 
-        app: None | str = None, 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: None | str = None,
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> None | Coroutine[Any, Any, None]:
         """退出登录状态（可以把某个客户端下线，所有已登录设备可从 `login_devices` 获取）
 
@@ -19787,37 +19787,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def logout_by_ssoent(
-        self, 
-        payload: None | str | dict = None, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | str | dict = None,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def logout_by_ssoent(
-        self, 
-        payload: None | str | dict = None, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: None | str | dict = None,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def logout_by_ssoent(
-        self, 
-        payload: None | str | dict = None, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: None | str | dict = None,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """退出登录状态（可以把某个客户端下线，所有已登录设备可从 `login_devices` 获取）
 
@@ -19897,34 +19897,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def msg_contacts_ls(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://pmsg.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://pmsg.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def msg_contacts_ls(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://pmsg.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://pmsg.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def msg_contacts_ls(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://pmsg.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://pmsg.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取提示消息
 
@@ -19943,31 +19943,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def msg_contacts_notice(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def msg_contacts_notice(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def msg_contacts_notice(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取提示消息
 
@@ -19978,38 +19978,38 @@ class P115Client(P115OpenClient):
 
     @overload
     def msg_get_websocket_host(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def msg_get_websocket_host(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def msg_get_websocket_host(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://msg.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://msg.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 websocket 链接
 
         GET https://msg.115.com/?ct=im&ac=get_websocket_host
 
         .. note::
-            用返回数据构造链接，可由此监听 websocket 消息
+            用返回数据构造链接，可由此监听 websocket 消息，但目前来看，最多也就实时获得一个【删除】事件
 
             `wss://{server}/?uid={user_id}&session={session_id}&client_version=100&client_type=5&sequence_id=0&source=web&device_id=0000000000000000000000000000000000000000`
         """
@@ -20020,34 +20020,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_collection_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_collection_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_collection_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：自建听单（合集）列表
 
@@ -20071,34 +20071,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_collection_listen_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_collection_listen_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_collection_listen_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：设置听单（合集）
 
@@ -20117,34 +20117,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_collection_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_collection_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_collection_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我看：自建合集列表
 
@@ -20168,34 +20168,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_collection_watch_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_collection_watch_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_collection_watch_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我看：设置合集
 
@@ -20214,34 +20214,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_cover_auto(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_cover_auto(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_cover_auto(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：自动生成（专辑）封面
 
@@ -20260,34 +20260,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_cover_check(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_cover_check(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_cover_check(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：查看（专辑）封面是否存在
 
@@ -20305,34 +20305,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：专辑（详情）列表 或 专辑（详情）的基本信息和文件列表
 
@@ -20377,34 +20377,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_listen_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_listen_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_listen_update(
-        self, 
-        payload: dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：更新专辑（详情）
 
@@ -20445,34 +20445,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我看：专辑（详情）列表 或 专辑（详情）的基本信息和文件列表
 
@@ -20518,34 +20518,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_watch_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_watch_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_watch_update(
-        self, 
-        payload: dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我看：更新专辑（详情）
 
@@ -20586,34 +20586,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_recent_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_recent_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_recent_listen(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：【最近在听】列表
 
@@ -20632,34 +20632,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_recent_listen_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_recent_listen_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_recent_listen_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：更新【最近在听】
 
@@ -20678,34 +20678,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_recent_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_recent_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_recent_watch(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我看：【最近观看】列表
 
@@ -20724,34 +20724,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_recent_watch_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_recent_watch_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_recent_watch_update(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听：更新【最近观看】
 
@@ -20770,34 +20770,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_relate_file(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_relate_file(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_relate_file(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：罗列专辑（详情）的关联文件
 
@@ -20817,37 +20817,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_relate_file_update(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        channel_id: int | str = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        channel_id: int | str = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_relate_file_update(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        channel_id: int | str = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        channel_id: int | str = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_relate_file_update(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        channel_id: int | str = 1, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        channel_id: int | str = 1,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：更新专辑（详情）的关联文件
 
@@ -20875,34 +20875,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_related(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_related(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_related(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：人员列表
 
@@ -20920,34 +20920,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_related_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_related_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_related_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：更新人员
 
@@ -20969,34 +20969,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_type(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_type(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_type(
-        self, 
-        payload: int | dict = 1, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 1,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：分类列表
 
@@ -21015,34 +21015,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def multimedia_type_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def multimedia_type_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def multimedia_type_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """我听&我看：更新分类
 
@@ -21071,34 +21071,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_bookmark_list(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://bookmark.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://bookmark.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_bookmark_list(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://bookmark.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://bookmark.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_bookmark_list(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://bookmark.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://bookmark.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列书签（网址收藏夹）
 
@@ -21126,34 +21126,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_cate_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_cate_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_cate_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """添加记录分类
 
@@ -21169,34 +21169,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_cate_del(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_cate_del(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_cate_del(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除记录分类
 
@@ -21213,34 +21213,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_cate_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_cate_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_cate_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """改名记录分类
 
@@ -21255,34 +21255,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_cate_list(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_cate_list(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_cate_list(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取记录分类列表
 
@@ -21298,34 +21298,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_cate_list2(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_cate_list2(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_cate_list2(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取记录分类列表
 
@@ -21343,34 +21343,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_del(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_del(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_del(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除记录
 
@@ -21388,34 +21388,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_del2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_del2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_del2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除记录
 
@@ -21433,34 +21433,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_detail(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_detail(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_detail(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取备忘（记录/笔记/记事）数据
 
@@ -21476,34 +21476,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_detail2(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_detail2(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_detail2(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取备忘（记录/笔记/记事）数据
 
@@ -21522,34 +21522,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_edit_attaches(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_edit_attaches(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_edit_attaches(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """给记录修改附件
 
@@ -21568,34 +21568,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_fav_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_fav_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_fav_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取星标备忘（记录/笔记/记事）列表
 
@@ -21613,34 +21613,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_fav_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_fav_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_fav_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """给记录添加或去除星标
 
@@ -21658,34 +21658,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_get_pic_url(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量获取图片的预览图链接
 
@@ -21713,43 +21713,43 @@ class P115Client(P115OpenClient):
         elif isinstance(payload, tuple):
             payload = [("rs[]", s) for s in payload]
         return self.request(
-            url=api, 
-            method="POST", 
-            data=payload, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data=payload,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def note_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_get_pic_url2(
-        self, 
-        payload: str | tuple[str, ...] | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | tuple[str, ...] | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量获取图片的预览图链接
 
@@ -21777,43 +21777,43 @@ class P115Client(P115OpenClient):
         elif isinstance(payload, tuple):
             payload = [("rs[]", s) for s in payload]
         return self.request(
-            url=api, 
-            method="POST", 
-            data=payload, 
-            async_=async_, 
-            **request_kwargs, 
+            url=api,
+            method="POST",
+            data=payload,
+            async_=async_,
+            **request_kwargs,
         )
 
     @overload
     def note_is_fav(
-        self, 
-        payload: int | str | Iterable[int | str] |dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] |dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_is_fav(
-        self, 
-        payload: int | str | Iterable[int | str] |dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] |dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_is_fav(
-        self, 
-        payload: int | str | Iterable[int | str] |dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] |dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查记录是否被星标
 
@@ -21837,34 +21837,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取备忘（记录/笔记/记事）列表
 
@@ -21887,34 +21887,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_list2(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_list2(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_list2(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取备忘（记录/笔记/记事）列表
 
@@ -21936,34 +21936,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_save(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_save(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_save(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """保存备忘（记录/笔记/记事）
 
@@ -21991,34 +21991,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_save2(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_save2(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_save2(
-        self, 
-        payload: str | dict | list, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict | list,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """编辑备忘（记录/笔记/记事）
 
@@ -22045,34 +22045,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_search(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """搜索备忘（记录/笔记/记事）
 
@@ -22110,34 +22110,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_set_cate(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_set_cate(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_set_cate(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改记录的分类
 
@@ -22152,34 +22152,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_set_cate2(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_set_cate2(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_set_cate2(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改记录的分类
 
@@ -22194,34 +22194,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_set_tag(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_set_tag(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_set_tag(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改记录的标签
 
@@ -22242,34 +22242,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_tag_color(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_tag_color(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_tag_color(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """上传标签，返回标签并提供颜色
 
@@ -22292,34 +22292,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_tag_latest(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_tag_latest(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_tag_latest(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取最近使用的标签
 
@@ -22341,31 +22341,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取记录的列表展示的配置(目前只有【每页数量设置】）
 
@@ -22376,34 +22376,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def note_user_setting_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def note_user_setting_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def note_user_setting_set(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://note.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://note.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改记录的列表展示的配置
 
@@ -22421,34 +22421,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_album(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_album(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_album(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取相册信息
 
@@ -22464,34 +22464,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_album_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_album_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_album_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建相册
 
@@ -22509,34 +22509,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_album_group(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_album_group(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_album_group(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取相册分组
 
@@ -22552,34 +22552,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_album_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_album_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_album_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取相册列表
 
@@ -22602,34 +22602,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_album_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_album_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_album_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新相册
 
@@ -22647,34 +22647,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_bind(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_bind(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_bind(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """把图片或视频转存到相册
 
@@ -22707,34 +22707,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取相册的文件列表
 
@@ -22758,34 +22758,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册信息
 
@@ -22801,34 +22801,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_add(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """新建共享相册
 
@@ -22845,34 +22845,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册列表
 
@@ -22892,34 +22892,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册的成员用户列表
 
@@ -22937,34 +22937,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_record_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_record_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_record_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册的操作记录列表
 
@@ -22983,34 +22983,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_record_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_record_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_record_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """在共享相册中增加或删除 1 条记录
 
@@ -23028,34 +23028,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_sharealbum_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_sharealbum_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_sharealbum_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新共享相册
 
@@ -23075,34 +23075,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_share_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_share_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_share_list(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册的图片列表
 
@@ -23127,34 +23127,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_share_remove(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_share_remove(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_share_remove(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """把共享相册的图片移除
 
@@ -23169,34 +23169,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_share_save(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_share_save(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_share_save(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """把共享相册的图片保存到照片库
 
@@ -23211,34 +23211,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_share_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_share_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_share_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享相册的时间线列表，然后你可以通过 `client.photo_share_list` 获取对应时间线的图片列表
 
@@ -23258,34 +23258,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def photo_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def photo_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def photo_timeline(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取时间线列表，然后你可以通过 `client.photo_list` 获取对应时间线的图片列表
 
@@ -23307,37 +23307,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_clean(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：删除或清空
 
@@ -23364,37 +23364,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_clean2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_clean2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_clean2(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：删除或清空
 
@@ -23423,40 +23423,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_clean_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_clean_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_clean_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict = "", 
-        /, 
-        password: str = "000000", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict = "",
+        /,
+        password: str = "000000",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：删除或清空
 
@@ -23485,34 +23485,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：文件信息
 
@@ -23528,34 +23528,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：列表
 
@@ -23583,7 +23583,7 @@ class P115Client(P115OpenClient):
             - o: str = <default> 💡 排序依据：dtime:删除时间
             - asc: 0 | 1 = <default>
             - source: str = <default>
-        """ 
+        """
         api = complete_url("/rb", base_url=base_url)
         if isinstance(payload, int):
             payload = {"offset": payload}
@@ -23592,37 +23592,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：列表
 
@@ -23648,7 +23648,7 @@ class P115Client(P115OpenClient):
             - limit: int = 32
             - offset: int = 0
             - source: str = <default>
-        """ 
+        """
         api = complete_url("/rb", base_url=base_url, app=app)
         if isinstance(payload, int):
             payload = {"offset": payload}
@@ -23657,34 +23657,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_revert(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：还原
 
@@ -23707,37 +23707,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def recyclebin_revert_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def recyclebin_revert_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def recyclebin_revert_app(
-        self, 
-        payload: int | str | Iterable[int | str] | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | Iterable[int | str] | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """回收站：还原
 
@@ -23762,34 +23762,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_access_user_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_access_user_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_access_user_list(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """访问账号列表
 
@@ -23805,34 +23805,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_activate(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_activate(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_activate(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """激活分享
 
@@ -23848,34 +23848,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_batch_renewal_long_skip(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_batch_renewal_long_skip(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_batch_renewal_long_skip(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """将免登录下载链接设为长期
 
@@ -23894,37 +23894,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_batch_skip_login_down(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        skip_login: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        skip_login: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_batch_skip_login_down(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        skip_login: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        skip_login: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_batch_skip_login_down(
-        self, 
-        payload: str | Iterable[str] | dict, 
-        /, 
-        skip_login: bool = True, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | Iterable[str] | dict,
+        /,
+        skip_login: bool = True,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """批量开启或关闭免登录下载
 
@@ -23935,7 +23935,7 @@ class P115Client(P115OpenClient):
 
         :payload:
             - share_code: str       💡 分享码，多个用逗号 "," 隔开
-            - skip_login: 0 | 1 = 1 💡 是否允许免登录下载 
+            - skip_login: 0 | 1 = 1 💡 是否允许免登录下载
         """
         api = complete_url("/share/batch_skip_login_down", base_url=base_url)
         if isinstance(payload, str):
@@ -23948,34 +23948,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_downlist(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_downlist(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_downlist(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接的某个目录中可下载的文件的列表（只含文件，不含目录，任意深度，简略信息）
 
@@ -23994,37 +23994,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_downlist_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_downlist_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_downlist_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接的某个目录中可下载的文件的列表（只含文件，不含目录，任意深度，简略信息）
 
@@ -24046,40 +24046,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_download_url(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def share_download_url(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def share_download_url(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取分享链接中某个文件的下载链接
 
@@ -24115,58 +24115,58 @@ class P115Client(P115OpenClient):
             file_id = payload["file_id"]
             if not info:
                 throw(
-                    errno.ENOENT, 
-                    f"no such id: {file_id!r}, with response {resp}", 
+                    errno.ENOENT,
+                    f"no such id: {file_id!r}, with response {resp}",
                 )
             url = info["url"]
             if strict and not url:
                 throw(
-                    errno.EISDIR, 
-                    f"{file_id} is a directory, with response {resp}", 
+                    errno.EISDIR,
+                    f"{file_id} is a directory, with response {resp}",
                 )
             return P115URL(
-                url["url"] if url else "", 
-                id=int(info["fid"]), 
-                name=info["fn"], 
-                size=int(info["fs"]), 
-                sha1=info.get("sha1", ""), 
-                is_dir=not url, 
+                url["url"] if url else "",
+                id=int(info["fid"]),
+                name=info["fn"],
+                size=int(info["fs"]),
+                sha1=info.get("sha1", ""),
+                is_dir=not url,
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def share_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_download_url_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接中某个文件的下载链接
 
@@ -24194,34 +24194,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接中某个文件的下载链接（网页版接口）
 
@@ -24240,34 +24240,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_info(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取（自己的）分享信息
 
@@ -24283,37 +24283,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_info_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取（自己的）分享信息
 
@@ -24329,34 +24329,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列（自己的）分享信息列表
 
@@ -24380,37 +24380,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_list_app(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """罗列（自己的）分享信息列表
 
@@ -24428,31 +24428,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_notlogin_dl_quota(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_notlogin_dl_quota(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_notlogin_dl_quota(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """免登录下载流量配额
 
@@ -24463,34 +24463,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_notlogin_dl_quota_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_notlogin_dl_quota_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_notlogin_dl_quota_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """免登录下载流量配额
 
@@ -24501,34 +24501,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_receive(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_receive(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_receive(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """接收分享链接的某些文件或目录
 
@@ -24546,37 +24546,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_receive_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_receive_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_receive_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """接收分享链接的某些文件或目录
 
@@ -24594,34 +24594,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_recvcode(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_recvcode(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_recvcode(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """取消访问码
 
@@ -24639,37 +24639,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_recvcode_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_recvcode_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_recvcode_app(
-        self, 
-        payload: str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """取消访问码
 
@@ -24687,34 +24687,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_send(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_send(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_send(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """创建（自己的）分享
 
@@ -24742,37 +24742,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_send_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_send_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_send_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """创建（自己的）分享
 
@@ -24800,34 +24800,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_search(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_search(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_search(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """从分享链接搜索文件或目录
 
@@ -24862,34 +24862,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_check(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_check(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_check(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检查是否可免登录下载
 
@@ -24906,34 +24906,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_down(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_down(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_down(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """开启或关闭免登录下载
 
@@ -24951,40 +24951,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_download_url(
-        self: int | str | dict | ClientRequestMixin, 
-        payload: None | int | str | dict = None, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin,
+        payload: None | int | str | dict = None,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def share_skip_login_download_url(
-        self: int | str | dict | ClientRequestMixin, 
-        payload: None | int | str | dict = None, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin,
+        payload: None | int | str | dict = None,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def share_skip_login_download_url(
-        self: int | str | dict | ClientRequestMixin, 
-        payload: None | int | str | dict = None, 
-        /, 
-        url: str = "", 
-        strict: bool = True, 
-        app: str = "", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin,
+        payload: None | int | str | dict = None,
+        /,
+        url: str = "",
+        strict: bool = True,
+        app: str = "",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取分享链接中某个文件的下载链接
 
@@ -25029,58 +25029,58 @@ class P115Client(P115OpenClient):
             file_id = payload["file_id"]
             if not info:
                 throw(
-                    errno.ENOENT, 
-                    f"no such id: {file_id!r}, with response {resp}", 
+                    errno.ENOENT,
+                    f"no such id: {file_id!r}, with response {resp}",
                 )
             url = info["url"]
             if strict and not url:
                 throw(
-                    errno.EISDIR, 
-                    f"{file_id} is a directory, with response {resp}", 
+                    errno.EISDIR,
+                    f"{file_id} is a directory, with response {resp}",
                 )
             return P115URL(
-                url["url"] if url else "", 
-                id=int(info["fid"]), 
-                name=info["fn"], 
-                size=int(info["fs"]), 
-                sha1=info.get("sha1", ""), 
-                is_dir=not url, 
+                url["url"] if url else "",
+                id=int(info["fid"]),
+                name=info["fn"],
+                size=int(info["fs"]),
+                sha1=info.get("sha1", ""),
+                is_dir=not url,
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def share_skip_login_download_url_app(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_download_url_app(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_download_url_app(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        app: str = "", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        app: str = "",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取免登录下载链接
 
@@ -25115,34 +25115,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_download_url_web(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_download_url_web(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_download_url_web(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取免登录下载链接
 
@@ -25167,34 +25167,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_down_first(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_down_first(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_down_first(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """免登录下载信息
 
@@ -25210,34 +25210,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_skip_login_down_details(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_skip_login_down_details(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_skip_login_down_details(
-        self, 
-        payload: str | dict = "", 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict = "",
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """流量消耗明细
 
@@ -25261,34 +25261,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_snap(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_snap(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_snap(
-        self: dict | ClientRequestMixin, 
-        payload: None | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self: dict | ClientRequestMixin,
+        payload: None | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接的某个目录中的文件和子目录的列表（包含详细信息）
 
@@ -25326,37 +25326,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_snap_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_snap_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_snap_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取分享链接的某个目录中的文件和子目录的列表（包含详细信息）
 
@@ -25384,34 +25384,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_update(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """变更（自己的）分享的配置（例如改访问密码，取消分享）
 
@@ -25436,37 +25436,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def share_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def share_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def share_update_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """变更（自己的）分享的配置（例如改访问密码，取消分享）
 
@@ -25492,31 +25492,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_clear_empty_folder(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_clear_empty_folder(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_clear_empty_folder(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除空目录
 
@@ -25527,34 +25527,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_repeat(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_repeat(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_repeat(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """开始一键排重任务
 
@@ -25570,34 +25570,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_repeat_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_repeat_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_repeat_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除重复文件
 
@@ -25624,31 +25624,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_repeat_delete_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_repeat_delete_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_repeat_delete_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除重复文件进度和统计信息（status 为 False 表示进行中，为 True 表示完成）
 
@@ -25659,34 +25659,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_repeat_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_repeat_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_repeat_list(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取重复文件列表
 
@@ -25705,31 +25705,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_repeat_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_repeat_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_repeat_status(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://aps.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://aps.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """查询一键排重任务进度和统计信息（status 为 False 表示进行中，为 True 表示完成）
 
@@ -25740,31 +25740,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def tool_space(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def tool_space(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def tool_space(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """检验空间
 
@@ -25783,31 +25783,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取和上传有关的信息，其中 "user_id" 和 "userkey" 是至关重要的
 
@@ -25818,34 +25818,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_init(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """初始化上传任务，可能秒传
 
@@ -25867,24 +25867,24 @@ class P115Client(P115OpenClient):
         """
         api = complete_url("/4.0/initupload.php", base_url=base_url)
         payload = {
-            "appid": 0, 
-            "target": "U_1_0", 
-            "sign_key": "", 
-            "sign_val": "", 
-            "topupload": "true", 
-            **payload, 
-            "appversion": "99.99.99.99", 
+            "appid": 0,
+            "target": "U_1_0",
+            "sign_key": "",
+            "sign_val": "",
+            "topupload": "true",
+            **payload,
+            "appversion": "99.99.99.99",
         }
         if "userid" not in payload:
             payload["userid"] = self.user_id
         if "userkey" not in payload:
             payload["userkey"] = self.user_key
         request_kwargs["headers"] = dict_update(
-            dict(request_kwargs.get("headers") or ()), 
+            dict(request_kwargs.get("headers") or ()),
             {
-                "content-type": "application/x-www-form-urlencoded", 
-                "user-agent": "Mozilla/5.0 115disk/99.99.99.99 115Browser/99.99.99.99 115wangpan_android/99.99.99.99", 
-            }, 
+                "content-type": "application/x-www-form-urlencoded",
+                "user-agent": "Mozilla/5.0 115disk/99.99.99.99 115Browser/99.99.99.99 115wangpan_android/99.99.99.99",
+            },
         )
         request_kwargs.update(make_upload_payload(payload))
         def parse_upload_init_response(_, content: bytes, /) -> dict:
@@ -25895,34 +25895,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_key(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_key(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_key(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 user_key
 
@@ -25938,34 +25938,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_resume(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取恢复断点续传所需信息
 
@@ -25993,9 +25993,9 @@ class P115Client(P115OpenClient):
                 callback_var = loads(payload["callback"]["callback_var"])
             if callback_var:
                 payload.update(
-                    pickcode=callback_var["x:pick_code"], 
-                    target=callback_var["x:target"], 
-                    userid=callback_var["x:user_id"], 
+                    pickcode=callback_var["x:pick_code"],
+                    target=callback_var["x:target"],
+                    userid=callback_var["x:user_id"],
                 )
         payload.setdefault("fileid", "0" * 40)
         payload.setdefault("filesize", 1)
@@ -26006,44 +26006,41 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_avatar(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://ictxl.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://ictxl.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_avatar(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://ictxl.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://ictxl.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_avatar(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://ictxl.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://ictxl.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """上传一张图片，可用于作为头像（图片时效性很短，请尽快使用）
 
-        POST https://ictxl.115.com/app/1.1/web/1.2/upload/set_avatar
+        POST https://ictxl.115.com/app/1.1/{app}/1.2/upload/set_avatar
 
         .. attention::
             此接口采用 multi-part 上传，其实是可以一次传多个文件的，但我做的封装只允许传一张图片。
@@ -26059,46 +26056,105 @@ class P115Client(P115OpenClient):
         :return: 接口响应
         """
         api = complete_url(f"/app/1.1/{app}/1.2/upload/set_avatar", base_url=base_url)
-        if isinstance(file, str):
+        if isinstance(file, (str, PathLike)):
             file = open(file, "rb")
         return self.request(url=api, method="POST", files={"file": ("a.jpg", file)}, async_=async_, **request_kwargs)
 
     @overload
+    def upload_avatar2(
+        self,
+        /,
+        file: Buffer | str | PathLike,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://job.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
+    ) -> dict:
+        ...
+    @overload
+    def upload_avatar2(
+        self,
+        /,
+        file: Buffer | str | PathLike,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://job.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
+    ) -> Coroutine[Any, Any, dict]:
+        ...
+    def upload_avatar2(
+        self,
+        /,
+        file: Buffer | str | PathLike,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://job.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
+    ) -> dict | Coroutine[Any, Any, dict]:
+        """上传一张图片，可用于作为头像
+
+        POST https://job.115.com/api/1.0/{app}/26.0/5/upload/avatar
+
+        :param file: 待上传的文件数据
+        :param app: 使用此设备的接口
+        :param base_url: 接口的基地址
+        :param async_: 是否异步
+        :param request_kwargs: 其余请求参数
+
+        :return: 接口响应
+        """
+        api = complete_url(f"/api/1.0/{app}/1.0/upload/avatar", base_url=base_url)
+        if isinstance(file, (str, PathLike)):
+            data: Buffer = open(file, "rb").read()
+        else:
+            data = file
+        headers = dict(request_kwargs.pop("headers", None) or ())
+        headers["content-type"] = "application/x-www-form-urlencoded"
+        return self.request(
+            url=api,
+            method="POST",
+            data=b"img="+b64encode(data),
+            headers=headers,
+            async_=async_,
+            **request_kwargs,
+        )
+
+    @overload
     def upload_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://credentials.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://credentials.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://credentials.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://credentials.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://credentials.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://credentials.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """上传一张图片，可用于作为证件照
 
@@ -26116,40 +26172,40 @@ class P115Client(P115OpenClient):
         :return: 接口响应
         """
         api = complete_url(f"/api/1.0/{app}/1.0/credentials/upload_images", base_url=base_url)
-        if isinstance(file, str):
+        if isinstance(file, (str, PathLike)):
             file = open(file, "rb")
         return self.request(url=api, method="POST", files={"image": ("a.jpg", file)}, async_=async_, **request_kwargs)
 
     @overload
     def upload_image_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_image_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_image_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传图片接口的初始化
 
@@ -26162,7 +26218,7 @@ class P115Client(P115OpenClient):
             通过扩展名来识别，仅支持以下格式图片(jpg,jpeg,png,gif,svg,webp,heic,bmp,dng)
 
         .. note::
-            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"
+            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"、"U_3_-10" 等
 
         :payload:
             - filename: str = <default> 💡 文件名，默认为一个新的 uuid4 对象的字符串表示
@@ -26181,34 +26237,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_sample_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_sample_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_sample_init(
-        self, 
-        payload: str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传接口的初始化
 
@@ -26236,40 +26292,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_file_image_init(
-        self, 
-        /, 
-        filename: str = "", 
-        pid: int | str = "U_4_-1", 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        pid: int | str = "U_4_-1",
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_image_init(
-        self, 
-        /, 
-        filename: str = "", 
-        pid: int | str = "U_4_-1", 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        pid: int | str = "U_4_-1",
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_image_init(
-        self, 
-        /, 
-        filename: str = "", 
-        pid: int | str = "U_4_-1", 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        pid: int | str = "U_4_-1",
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传图片接口的初始化，不会秒传，此接口是对 `upload_image_init` 的封装
 
@@ -26277,7 +26333,7 @@ class P115Client(P115OpenClient):
             通过扩展名来识别，仅支持以下格式图片(jpg,jpeg,png,gif,svg,webp,heic,bmp,dng)
 
         .. note::
-            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"
+            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"、"U_3_-10" 等
 
         :param filename: 文件名，默认为一个新的 uuid4 对象的字符串表示
         :param pid: 上传文件到此目录的 id 或 pickcode，或者指定的 target（格式为 f"U_{aid}_{pid}" 或 f"S_{share_id}_{pid}"）
@@ -26297,46 +26353,46 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_file_sample_init(
-        self, 
-        /, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        pid: int | str = 0, 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        pid: int | str = 0,
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_sample_init(
-        self, 
-        /, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        pid: int | str = 0, 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        pid: int | str = 0,
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_sample_init(
-        self, 
-        /, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        pid: int | str = 0, 
-        share_id: int = 0, 
-        base_url: str | Callable[[], str] = "https://uplb.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        pid: int | str = 0,
+        share_id: int = 0,
+        base_url: str | Callable[[], str] = "https://uplb.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传接口的初始化，不会秒传，此接口是对 `upload_sample_init` 的封装
 
@@ -26364,43 +26420,43 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_init(
-        self, 
-        /, 
-        filename: str, 
-        filesize: int, 
-        filesha1: str, 
-        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None, 
-        pid: int | str = 0, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        filename: str,
+        filesize: int,
+        filesha1: str,
+        read_range_bytes_or_hash: None | Callable[[str], str | Buffer] = None,
+        pid: int | str = 0,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """初始化上传，可能秒传，此接口是对 `upload_init` 的封装
 
@@ -26426,15 +26482,15 @@ class P115Client(P115OpenClient):
             else:
                 target = f"U_1_{pid}"
             payload = {
-                "filename": filename, 
-                "fileid": filesha1.upper(), 
-                "filesize": filesize, 
-                "target": target, 
+                "filename": filename,
+                "fileid": filesha1.upper(),
+                "filesize": filesize,
+                "target": target,
             }
             resp = yield self.upload_init(
-                payload, 
-                async_=async_, 
-                **request_kwargs, 
+                payload,
+                async_=async_,
+                **request_kwargs,
             )
             status = resp["status"]
             if status == 7:
@@ -26452,9 +26508,9 @@ class P115Client(P115OpenClient):
                 else:
                     payload["sign_val"] = sha1(content).hexdigest().upper()
                 resp = yield self.upload_init(
-                    payload, 
+                    payload,
                     async_=async_, # type: ignore
-                    **request_kwargs, 
+                    **request_kwargs,
                 )
                 status = resp["status"]
             resp["reuse"] = status == 2
@@ -26464,40 +26520,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def upload_file_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] ), 
-        pid: int | str = "U_4_-1", 
-        filename: str = "", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] ),
+        pid: int | str = "U_4_-1",
+        filename: str = "",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        pid: int | str = "U_4_-1", 
-        filename: str = "", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        pid: int | str = "U_4_-1",
+        filename: str = "",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_image(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        pid: int | str = "U_4_-1", 
-        filename: str = "", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        pid: int | str = "U_4_-1",
+        filename: str = "",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传图片接口
 
@@ -26505,7 +26561,7 @@ class P115Client(P115OpenClient):
             不支持秒传，但也不必传文件大小和 sha1，最大支持上传 50 MB 的文件
 
         .. note::
-            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"
+            `target` 随便设置，例如 "U_4_-1"、"U_5_-2"、"U_3_-10" 等
 
         :param file: 待上传的文件
         :param pid: 上传文件到此目录的 id 或 pickcode，或者指定的 target（格式为 f"U_{aid}_{pid}" 或 f"S_{share_id}_{pid}"）
@@ -26539,8 +26595,8 @@ class P115Client(P115OpenClient):
                         if async_:
                             async def process():
                                 return await AsyncHTTPFileReader.new(
-                                    cast(str, path), 
-                                    headers={"user-agent": "", "accept-encoding": "identity"}, 
+                                    cast(str, path),
+                                    headers={"user-agent": "", "accept-encoding": "identity"},
                                 )
                             file = yield process()
                         else:
@@ -26566,10 +26622,10 @@ class P115Client(P115OpenClient):
                         filename = getattr(file, "name", "")
                         filename = basename(filename)
             resp = yield self.upload_file_image_init(
-                filename, 
-                pid=pid, 
-                async_=async_, 
-                **request_kwargs, 
+                filename,
+                pid=pid,
+                async_=async_,
+                **request_kwargs,
             )
             def parse(_, content: bytes):
                 data = json_loads(content)
@@ -26577,65 +26633,65 @@ class P115Client(P115OpenClient):
                 return data
             request_kwargs.setdefault("parse", parse)
             return self.request(
-                url=resp["host"], 
-                method="POST", 
+                url=resp["host"],
+                method="POST",
                 data={
-                    "name": filename, 
-                    "key": resp["object"], 
-                    "policy": resp["policy"], 
-                    "OSSAccessKeyId": resp["accessid"], 
-                    "success_action_status": "200", 
-                    "callback": resp["callback"], 
-                    "signature": resp["signature"], 
-                }, 
-                files={"file": file}, 
-                async_=async_, 
-                **request_kwargs, 
+                    "name": filename,
+                    "key": resp["object"],
+                    "policy": resp["policy"],
+                    "OSSAccessKeyId": resp["accessid"],
+                    "success_action_status": "200",
+                    "callback": resp["callback"],
+                    "signature": resp["signature"],
+                },
+                files={"file": file},
+                async_=async_,
+                **request_kwargs,
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def upload_file_sample(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] ), 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] ),
+        pid: int | str = 0,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file_sample(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        pid: int | str = 0,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file_sample(
-        self, 
-        /, 
-        file: ( Buffer | str | PathLike | URL | SupportsGeturl | 
-                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ), 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesize: int = -1, 
-        dirname: str = "", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: ( Buffer | str | PathLike | URL | SupportsGeturl |
+                SupportsRead | Iterable[Buffer] | AsyncIterable[Buffer] ),
+        pid: int | str = 0,
+        filename: str = "",
+        filesize: int = -1,
+        dirname: str = "",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """网页端的上传接口
 
@@ -26720,8 +26776,8 @@ class P115Client(P115OpenClient):
                         if async_:
                             async def process():
                                 return await AsyncHTTPFileReader.new(
-                                    cast(str, path), 
-                                    headers={"user-agent": "", "accept-encoding": "identity"}, 
+                                    cast(str, path),
+                                    headers={"user-agent": "", "accept-encoding": "identity"},
                                 )
                             file = yield process()
                         else:
@@ -26742,12 +26798,12 @@ class P115Client(P115OpenClient):
                             from os.path import basename
                             filename = basename(path)
             resp = yield self.upload_file_sample_init(
-                filename, 
-                dirname=dirname, 
-                pid=pid, 
-                filesize=filesize, 
-                async_=async_, 
-                **request_kwargs, 
+                filename,
+                dirname=dirname,
+                pid=pid,
+                filesize=filesize,
+                async_=async_,
+                **request_kwargs,
             )
             def parse(_, content: bytes):
                 data = json_loads(content)
@@ -26755,74 +26811,74 @@ class P115Client(P115OpenClient):
                 return data
             request_kwargs.setdefault("parse", parse)
             return self.request(
-                url=resp["host"], 
-                method="POST", 
+                url=resp["host"],
+                method="POST",
                 data={
-                    "name": filename, 
-                    "key": resp["object"], 
-                    "policy": resp["policy"], 
-                    "OSSAccessKeyId": resp["accessid"], 
-                    "success_action_status": "200", 
-                    "callback": resp["callback"], 
-                    "signature": resp["signature"], 
-                }, 
-                files={"file": file}, 
-                async_=async_, 
-                **request_kwargs, 
+                    "name": filename,
+                    "key": resp["object"],
+                    "policy": resp["policy"],
+                    "OSSAccessKeyId": resp["accessid"],
+                    "success_action_status": "200",
+                    "callback": resp["callback"],
+                    "signature": resp["signature"],
+                },
+                files={"file": file},
+                async_=async_,
+                **request_kwargs,
             )
         return run_gen_step(gen_step, async_)
 
     @overload
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def upload_file(
-        self, 
-        /, 
-        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead, 
-        pid: int | str = 0, 
-        filename: str = "", 
-        filesha1: str = "", 
-        filesize: int = -1, 
-        partsize: int = 0, 
-        callback: None | dict = None, 
-        upload_id: str = "", 
-        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        file: Buffer | str | PathLike | URL | SupportsGeturl | SupportsRead,
+        pid: int | str = 0,
+        filename: str = "",
+        filesha1: str = "",
+        filesize: int = -1,
+        partsize: int = 0,
+        callback: None | dict = None,
+        upload_id: str = "",
+        endpoint: str = "http://oss-cn-shenzhen.aliyuncs.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """上传文件
 
@@ -26857,53 +26913,53 @@ class P115Client(P115OpenClient):
         if isinstance(pid, str) and not pid.startswith(("U_", "S_")):
             pid = self.to_id(pid)
         return upload_file(
-            file=file, 
-            pid=pid, 
-            filename=filename, 
-            filesha1=filesha1, 
-            filesize=filesize, 
-            user_id=self.user_id, 
-            user_key=self.user_key, 
-            partsize=partsize, 
-            callback=callback, 
-            upload_id=upload_id, 
-            endpoint=endpoint, 
-            async_=async_, 
-            **request_kwargs, 
+            file=file,
+            pid=pid,
+            filename=filename,
+            filesha1=filesha1,
+            filesize=filesize,
+            user_id=self.user_id,
+            user_key=self.user_key,
+            partsize=partsize,
+            callback=callback,
+            upload_id=upload_id,
+            endpoint=endpoint,
+            async_=async_,
+            **request_kwargs,
         )
 
     ########## User API ##########
 
     @overload
     def user_base_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_base_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_base_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://qrcodeapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户的基本信息
 
@@ -26914,34 +26970,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_card(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_card(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_card(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户信息
 
@@ -26952,34 +27008,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_count_space_nums(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_count_space_nums(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_count_space_nums(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取当前已用空间、可用空间、登录设备等信息
 
@@ -26990,34 +27046,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_display_uid_list(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_display_uid_list(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_display_uid_list(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """账号信息 VIP 相关信息
 
@@ -27028,31 +27084,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_fingerprint(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_fingerprint(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_fingerprint(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取截图时嵌入的水印
 
@@ -27063,34 +27119,34 @@ class P115Client(P115OpenClient):
 
     @overload # type: ignore
     def user_info(
-        self: int | str | dict | ClientRequestMixin = 11500, 
-        payload: None | int | str | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin = 11500,
+        payload: None | int | str | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_info(
-        self: int | str | dict | ClientRequestMixin = 11500, 
-        payload: None | int | str | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin = 11500,
+        payload: None | int | str | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_info(
-        self: int | str | dict | ClientRequestMixin = 11500, 
-        payload: None | int | str | dict = None, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self: int | str | dict | ClientRequestMixin = 11500,
+        payload: None | int | str | dict = None,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户信息
 
@@ -27128,37 +27184,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_info2(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_info2(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_info2(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户信息
 
@@ -27176,31 +27232,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_info3(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_info3(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_info3(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户信息
 
@@ -27211,34 +27267,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_info_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_info_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_info_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """更新用户信息
 
@@ -27328,31 +27384,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_interests_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_interests_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_interests_list(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """用户兴趣列表
 
@@ -27363,31 +27419,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_my(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_my(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_my(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此用户信息
 
@@ -27398,31 +27454,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_my_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_my_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_my_info(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此用户信息（更全）
 
@@ -27433,34 +27489,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_points_balance(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_points_balance(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_points_balance(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """剩余的签到积分
 
@@ -27471,34 +27527,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_points_sign(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_points_sign(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_points_sign(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取签到信息
 
@@ -27509,34 +27565,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_points_sign_post(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_points_sign_post(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_points_sign_post(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """每日签到（注意：不要用 web，即浏览器，的 cookies，会失败）
 
@@ -27545,44 +27601,44 @@ class P115Client(P115OpenClient):
         api = complete_url("/2.0/user/points_sign", base_url=base_url, app=app)
         t = int(time())
         payload = {
-            "token": sha1(b"%d-Points_Sign@#115-%d" % (self.user_id, t)).hexdigest(), 
-            "token_time": t, 
+            "token": sha1(b"%d-Points_Sign@#115-%d" % (self.user_id, t)).hexdigest(),
+            "token_time": t,
         }
         return self.request(url=api, method="POST", data=payload, async_=async_, **request_kwargs)
 
     @overload
     def user_points_transaction(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_points_transaction(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_points_transaction(
-        self, 
-        payload: int | dict = 0, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://points.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 0,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://points.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """签到记录
 
@@ -27601,31 +27657,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_public(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_public(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_public(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """用户隐私设置
 
@@ -27636,34 +27692,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_public_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_public_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_public_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://my.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://my.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置用户隐私
 
@@ -27681,34 +27737,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_relation_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_relation_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_relation_info(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://home.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://home.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户的关系信息
 
@@ -27719,37 +27775,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_security_key_check(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_security_key_check(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_security_key_check(
-        self, 
-        payload: int | str | dict = "", 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = "",
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取安全密钥对应的 token，可以提供给某些接口，作为通过安全密钥验证的凭证
 
@@ -27766,31 +27822,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此账户的设置
 
@@ -27801,31 +27857,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting2(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting2(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting2(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此账户的设置
 
@@ -27836,34 +27892,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改此账户的网页版设置（提示：较为复杂，自己抓包研究）
 
@@ -27874,34 +27930,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting_web(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting_web(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting_web(
-        self, 
-        payload: dict = {}, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict = {},
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此账户的 app 版设置（提示：较为复杂，自己抓包研究）
 
@@ -27915,34 +27971,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting_web_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting_web_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting_web_set(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取（并可修改）此账户的网页版设置（提示：较为复杂，自己抓包研究）
 
@@ -27953,34 +28009,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting_app(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取此账户的 app 版设置（提示：较为复杂，自己抓包研究）
 
@@ -27991,37 +28047,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_setting_app_set(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_setting_app_set(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_setting_app_set(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取（并可修改）此账户的网页版设置（提示：较为复杂，自己抓包研究）
 
@@ -28032,31 +28088,31 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_sign(
-        self, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """个性签名
 
@@ -28067,34 +28123,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_sign_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_sign_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_sign_set(
-        self, 
-        payload: dict | str, 
-        /, 
-        base_url: str | Callable[[], str] = "https://q.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict | str,
+        /,
+        base_url: str | Callable[[], str] = "https://q.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """修改个性签名
 
@@ -28110,34 +28166,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_space_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_space_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_space_info(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取使用空间的统计数据（较为简略，如需更详细，请用 ``P115Client.fs_index_info()``）
 
@@ -28148,34 +28204,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_teen_mode_state(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_teen_mode_state(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_teen_mode_state(
-        self, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取青少年（未成年）模式状态
 
@@ -28186,37 +28242,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_teen_mode_state_set(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_teen_mode_state_set(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_teen_mode_state_set(
-        self, 
-        payload: bool | dict = True, 
-        /, 
-        app: str = "web", 
-        base_url: str | Callable[[], str] = "https://passportapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: bool | dict = True,
+        /,
+        app: str = "web",
+        base_url: str | Callable[[], str] = "https://passportapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """开关青少年（未成年）模式状态
 
@@ -28237,34 +28293,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_vip_check_spw(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_vip_check_spw(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_vip_check_spw(
-        self, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取用户积分、余额等信息
 
@@ -28275,34 +28331,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def user_vip_limit(
-        self, 
-        payload: int | dict = 2, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 2,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def user_vip_limit(
-        self, 
-        payload: int | dict = 2, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 2,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def user_vip_limit(
-        self, 
-        payload: int | dict = 2, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict = 2,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取 vip 的某些限制
 
@@ -28320,34 +28376,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_add_folder(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_add_folder(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_add_folder(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """转存共享文件或目录
 
@@ -28363,37 +28419,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_add_folder_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_add_folder_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_add_folder_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """转存共享文件或目录
 
@@ -28409,34 +28465,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_action(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_action(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_action(
-        self, 
-        payload: int | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享动态列表
 
@@ -28455,37 +28511,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_action_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_action_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_action_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享动态列表
 
@@ -28504,34 +28560,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_copy(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_copy(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_copy(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """转存文件或目录
 
@@ -28548,37 +28604,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_copy_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_copy_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_copy_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """转存文件或目录
 
@@ -28595,34 +28651,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_delete(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除共享文件或目录
 
@@ -28638,37 +28694,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_delete_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_delete_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_delete_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """删除共享文件或目录
 
@@ -28684,43 +28740,43 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_download_url(
-        self, 
-        pickcode: str, 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: str,
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> P115URL:
         ...
     @overload
     def usershare_download_url(
-        self, 
-        pickcode: str, 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcode: str,
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, P115URL]:
         ...
     def usershare_download_url(
-        self, 
-        pickcode: str, 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        app: str = "chrome", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcode: str,
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        app: str = "chrome",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> P115URL | Coroutine[Any, Any, P115URL]:
         """获取文件的下载链接，此接口是对 `download_url_app` 的封装
 
@@ -28748,10 +28804,10 @@ class P115Client(P115OpenClient):
         def gen_step():
             if app in ("web", "desktop"):
                 resp = yield self.usershare_download_url_web(
-                    {"share_id": share_id, "pick_code": pickcode}, 
-                    user_agent=user_agent, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    {"share_id": share_id, "pick_code": pickcode},
+                    user_agent=user_agent,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 resp["pickcode"] = pickcode
                 try:
@@ -28760,92 +28816,92 @@ class P115Client(P115OpenClient):
                     if strict:
                         raise
                 return P115URL(
-                    resp.get("file_url", ""), 
-                    id=int(resp["file_id"]), 
-                    pickcode=pickcode, 
-                    name=resp["file_name"], 
-                    size=int(resp["file_size"]), 
-                    is_dir=not resp["state"], 
-                    headers=resp["headers"], 
+                    resp.get("file_url", ""),
+                    id=int(resp["file_id"]),
+                    pickcode=pickcode,
+                    name=resp["file_name"],
+                    size=int(resp["file_size"]),
+                    is_dir=not resp["state"],
+                    headers=resp["headers"],
                 )
             else:
                 resp = yield self.download_url_app(
-                    {"share_id": share_id, "pick_code": pickcode}, 
-                    user_agent=user_agent, 
-                    app=app, 
-                    async_=async_, 
-                    **request_kwargs, 
+                    {"share_id": share_id, "pick_code": pickcode},
+                    user_agent=user_agent,
+                    app=app,
+                    async_=async_,
+                    **request_kwargs,
                 )
                 resp["pickcode"] = pickcode
                 check_response(resp)
                 if "url" in resp["data"]:
                     url = resp["data"]["url"]
                     return P115URL(
-                        url, 
-                        pickcode=pickcode, 
-                        name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]), 
-                        is_dir=False, 
-                        headers=resp["headers"], 
+                        url,
+                        pickcode=pickcode,
+                        name=unquote(urlsplit(url).path.rsplit("/", 1)[-1]),
+                        is_dir=False,
+                        headers=resp["headers"],
                     )
                 for fid, info in resp["data"].items():
                     url = info["url"]
                     if strict and not url:
                         throw(
-                            errno.EISDIR, 
-                            f"{fid} is a directory, with response {resp}", 
+                            errno.EISDIR,
+                            f"{fid} is a directory, with response {resp}",
                         )
                     return P115URL(
-                        url["url"] if url else "", 
-                        id=int(fid), 
-                        pickcode=info["pick_code"], 
-                        name=info["file_name"], 
-                        size=int(info["file_size"]), 
-                        sha1=info["sha1"], 
-                        is_dir=not url, 
-                        headers=resp["headers"], 
+                        url["url"] if url else "",
+                        id=int(fid),
+                        pickcode=info["pick_code"],
+                        name=info["file_name"],
+                        size=int(info["file_size"]),
+                        sha1=info["sha1"],
+                        is_dir=not url,
+                        headers=resp["headers"],
                     )
                 throw(
-                    errno.ENOENT, 
-                    f"no such pickcode: {pickcode!r}, with response {resp}", 
+                    errno.ENOENT,
+                    f"no such pickcode: {pickcode!r}, with response {resp}",
                 )
         return run_gen_step(gen_step, async_)
 
     @overload
     def usershare_download_urls(
-        self, 
-        pickcodes: str | Iterable[str], 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: str | Iterable[str],
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL]:
         ...
     @overload
     def usershare_download_urls(
-        self, 
-        pickcodes: str | Iterable[str], 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        pickcodes: str | Iterable[str],
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict[int, P115URL]]:
         ...
     def usershare_download_urls(
-        self, 
-        pickcodes: str | Iterable[str], 
-        /, 
-        share_id: int | str, 
-        strict: bool = True, 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        pickcodes: str | Iterable[str],
+        /,
+        share_id: int | str,
+        strict: bool = True,
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict[int, P115URL] | Coroutine[Any, Any, dict[int, P115URL]]:
         """批量获取文件的下载链接，此接口是对 `download_url_app` 的封装
 
@@ -28873,10 +28929,10 @@ class P115Client(P115OpenClient):
             pickcodes = ",".join(pickcodes)
         def gen_step():
             resp = yield self.download_url_app(
-                {"pickcode": pickcodes, "share_id": share_id}, 
-                user_agent=user_agent, 
-                async_=async_, 
-                **request_kwargs, 
+                {"pickcode": pickcodes, "share_id": share_id},
+                user_agent=user_agent,
+                async_=async_,
+                **request_kwargs,
             )
             resp["pickcode"] = pickcodes
             urls: dict[int, P115URL] = {}
@@ -28890,51 +28946,51 @@ class P115Client(P115OpenClient):
                         continue
                     fid = int(fid)
                     urls[fid] = P115URL(
-                        url["url"] if url else "", 
-                        id=fid, 
-                        pickcode=info["pick_code"], 
-                        name=info["file_name"], 
-                        size=int(info["file_size"]), 
-                        sha1=info["sha1"], 
-                        is_dir=not url, 
-                        headers=resp["headers"], 
+                        url["url"] if url else "",
+                        id=fid,
+                        pickcode=info["pick_code"],
+                        name=info["file_name"],
+                        size=int(info["file_size"]),
+                        sha1=info["sha1"],
+                        is_dir=not url,
+                        headers=resp["headers"],
                     )
             return urls
         return run_gen_step(gen_step, async_)
 
     @overload
     def usershare_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_download_url_web(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        user_agent: None | str = None, 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        user_agent: None | str = None,
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取文件的下载链接（网页版接口）
 
@@ -28973,34 +29029,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_file_list(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_file_list(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_file_list(
-        self, 
-        payload: dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """共享目录中的文件列表
 
@@ -29016,8 +29072,8 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default> 💡 是否只搜索当前目录
             - custom_order: 0 | 1 = <default> 💡 启用自定义排序，如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 1
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - fc_mix: 0 | 1 = <default> 💡 是否目录和文件混合，如果为 0 则目录在前（目录置顶）
@@ -29065,37 +29121,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_file_list_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_file_list_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_file_list_app(
-        self, 
-        payload: dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """共享目录中的文件列表
 
@@ -29111,8 +29167,8 @@ class P115Client(P115OpenClient):
             - cur: 0 | 1 = <default> 💡 是否只搜索当前目录
             - custom_order: 0 | 1 = <default> 💡 启用自定义排序，如果指定了 "asc"、"fc_mix"、"o" 中其一，则此参数会被自动设置为 1
 
-                - 0: 使用记忆排序（自定义排序失效） 
-                - 1: 使用自定义排序（不使用记忆排序） 
+                - 0: 使用记忆排序（自定义排序失效）
+                - 1: 使用自定义排序（不使用记忆排序）
                 - 2: 自定义排序（非目录置顶）
 
             - fc_mix: 0 | 1 = <default> 💡 是否目录和文件混合，如果为 0 则目录在前（目录置顶）
@@ -29160,34 +29216,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_info(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享信息
 
@@ -29203,37 +29259,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_info_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_info_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_info_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享信息
 
@@ -29249,34 +29305,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_invite(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_invite(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_invite(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享链接
 
@@ -29292,37 +29348,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_invite_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_invite_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_invite_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """获取共享链接
 
@@ -29338,34 +29394,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_list(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """共享列表
 
@@ -29384,37 +29440,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_list_app(
-        self, 
-        payload: int | str | dict = 0, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict = 0,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """共享列表
 
@@ -29433,37 +29489,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_member(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """某共享的成员信息
 
@@ -29499,40 +29555,40 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_member_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_member_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_member_app(
-        self, 
-        payload: int | dict, 
-        /, 
-        method: str = "POST", 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | dict,
+        /,
+        method: str = "POST",
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """某共享的成员信息
 
@@ -29568,34 +29624,34 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_share(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_share(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_share(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        base_url: str | Callable[[], str] = "https://webapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        base_url: str | Callable[[], str] = "https://webapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置共享
 
@@ -29615,37 +29671,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def usershare_share_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False] = False,
+        **request_kwargs,
     ) -> dict:
         ...
     @overload
     def usershare_share_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[True], 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[True],
+        **request_kwargs,
     ) -> Coroutine[Any, Any, dict]:
         ...
     def usershare_share_app(
-        self, 
-        payload: int | str | dict, 
-        /, 
-        app: str = "android", 
-        base_url: str | Callable[[], str] = "https://proapi.115.com", 
-        *, 
-        async_: Literal[False, True] = False, 
-        **request_kwargs, 
+        self,
+        payload: int | str | dict,
+        /,
+        app: str = "android",
+        base_url: str | Callable[[], str] = "https://proapi.115.com",
+        *,
+        async_: Literal[False, True] = False,
+        **request_kwargs,
     ) -> dict | Coroutine[Any, Any, dict]:
         """设置共享
 
@@ -29667,37 +29723,37 @@ class P115Client(P115OpenClient):
 
     @overload
     def get_fs(
-        self, 
-        arg: None = None, 
-        /, 
-        refresh: bool = False, 
-        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None, 
+        self,
+        arg: None = None,
+        /,
+        refresh: bool = False,
+        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None,
     ) -> P115FileSystem:
         ...
     @overload
     def get_fs(
-        self, 
-        arg: int, 
-        /, 
-        refresh: bool = False, 
-        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None, 
+        self,
+        arg: int,
+        /,
+        refresh: bool = False,
+        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None,
     ) -> P115ZipFileSystem:
         ...
     @overload
     def get_fs(
-        self, 
-        arg: str, 
-        /, 
-        refresh: bool = False, 
-        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None, 
+        self,
+        arg: str,
+        /,
+        refresh: bool = False,
+        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None,
     ) -> P115ShareFileSystem:
         ...
     def get_fs(
-        self, 
-        arg: None | int | str = None, 
-        /, 
-        refresh: bool = False, 
-        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None, 
+        self,
+        arg: None | int | str = None,
+        /,
+        refresh: bool = False,
+        id_to_readdir: None | int | dict[int, dict[int, MutableMapping]] = None,
     ) -> P115FileSystemBase:
         if arg is None:
             return P115FileSystem(self, refresh=refresh, id_to_readdir=id_to_readdir)

@@ -17,14 +17,14 @@ from p115tinydav import make_application
 from uvicorn import run
 
 run(
-    make_application(debug=True), 
-    host="0.0.0.0", 
-    port=8000, 
-    proxy_headers=True, 
-    server_header=False, 
-    forwarded_allow_ips="*", 
-    timeout_graceful_shutdown=1, 
-    access_log=False, 
+    make_application(debug=True),
+    host="0.0.0.0",
+    port=8000,
+    proxy_headers=True,
+    server_header=False,
+    forwarded_allow_ips="*",
+    timeout_graceful_shutdown=1,
+    access_log=False,
 )
 ```
 
@@ -44,7 +44,7 @@ usage: p115tinydav [-h] [-c COOKIES] [-cp COOKIES_PATH] [-H HOST] [-P PORT] [-nc
     │                                                                              │
     │                      license     https://www.gnu.org/licenses/gpl-3.0.txt    │
     │                                                                              │
-    │                      version     0.0.2                                       │
+    │                      version     0.0.4                                       │
     │                                                                              │
     ╰──────────────────────────────────────────────────────────────────────────────╯
 
