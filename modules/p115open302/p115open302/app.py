@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
-__all__ = ["make_application"]
 
 from errno import ENOENT, ENOTDIR
 from hashlib import sha1 as calc_sha1

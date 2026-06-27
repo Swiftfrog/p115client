@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["main"]
 __doc__ = """\
     🛸 115 数据库 WebDAV 服务 ✈️
@@ -193,4 +192,3 @@ parser.set_defaults(func=main)
 
 if __name__ == "__main__":
     main()
-

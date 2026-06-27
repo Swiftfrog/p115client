@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = [
     "init_db", "iter_id_to_path", "id_to_path", "get_parent_id", "get_id", 
     "get_pickcode", "get_sha1", "get_path", "get_ancestors", "get_children", 

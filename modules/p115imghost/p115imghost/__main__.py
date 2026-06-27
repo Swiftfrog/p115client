@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
 
@@ -66,4 +65,3 @@ if __name__ == "__main__":
 
     path[0] = str(Path(__file__).parents[1])
     main()
-

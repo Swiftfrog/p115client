@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["crack_captcha"]
 
 from collections import defaultdict
@@ -121,4 +120,3 @@ def crack_captcha(
 #             if info["cid"] == 0 and info["file_name"] == "我的接收":
 #                 recyclebin.remove(info["id"], password)
 #                 return
-

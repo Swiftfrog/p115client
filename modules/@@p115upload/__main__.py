@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __doc__ = "115 网盘批量上传"
 
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter
@@ -634,4 +633,3 @@ if __name__ == "__main__":
 # upload_init(client, file, pid, filename, filesha1, filesize)
 
 # # TODO: 超过 115 GB 的直接跳过
-

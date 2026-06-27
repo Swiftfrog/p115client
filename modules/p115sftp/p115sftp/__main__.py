@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 # NOTE: https://patorjk.com/software/taag/#p=display&f=Sweet&t=p115sftp
 __doc__ = r"""    🕸️ Python 115 SFTP Server 🕷️
 
@@ -94,4 +93,3 @@ if __name__ == "__main__":
 
     path[0] = str(Path(__file__).parents[1])
     main()
-

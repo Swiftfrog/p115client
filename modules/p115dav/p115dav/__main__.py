@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 # http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=p115%20web
 __doc__ = """
     🕸️ 115 网盘 WebDAV 和 302 直链程序 🕷️
@@ -330,4 +329,3 @@ if __name__ == "__main__":
 
     path[0] = str(Path(__file__).parents[1])
     main()
-

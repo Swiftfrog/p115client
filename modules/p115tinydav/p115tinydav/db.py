@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["init_db", "updatedb_dir", "updatedb_tree", "updatedb_life"]
 
 from asyncio import to_thread

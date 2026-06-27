@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["main"]
 __doc__ = "115 网盘或分享链接批量下载"
 
@@ -493,4 +492,3 @@ if __name__ == "__main__":
 
 # TODO: 允许下载的时候改变名字
 # TODO: 允许下载到压缩包，或者 tar 包中
-

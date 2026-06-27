@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = [
     "get_dir_count", "has_id", "iter_existing_id", "get_parent_id", "iter_parent_id", 
     "iter_id_to_parent_id", "iter_id_to_path", "id_to_path", "get_id", "get_pickcode", 
@@ -1056,4 +1055,3 @@ def dump_efu(
                 path = normpath(path[1:])
             writerow((dirname + path, size, unix_to_filetime(mtime), unix_to_filetime(ctime), 16 if is_dir else 0))
     return n
-

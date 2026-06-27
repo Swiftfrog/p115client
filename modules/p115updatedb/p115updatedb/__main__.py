@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __doc__ = "遍历 115 网盘的目录，并把信息导出到数据库"
 
 from argparse import ArgumentParser, Namespace, RawTextHelpFormatter

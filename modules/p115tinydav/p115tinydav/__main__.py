@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __doc__ = """\
     ╭───────────────────────── \x1b[31mWelcome to \x1b[1m115 tiny dav\x1b[0m ────────────────────────────╮
     │                                                                              │
@@ -119,4 +118,3 @@ if __name__ == "__main__":
 
     path[0] = str(Path(__file__).parents[1])
     main()
-

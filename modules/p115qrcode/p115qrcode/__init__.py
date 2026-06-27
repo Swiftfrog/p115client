@@ -3,7 +3,6 @@
 
 "扫码获取 115 cookies"
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __version__ = (0, 0, 5)
 __license__ = "GPLv3 <https://www.gnu.org/licenses/gpl-3.0.txt>"
 __all__ = [
@@ -998,4 +997,3 @@ def qrcode_open(uid: str, /):
     start_new_thread(startfile, (qrcode_url(uid),))
 
 # TODO: 再添加所有和开放应用登录有关的接口
-

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
-__all__ = ["make_application"]
 
 from asyncio import to_thread
 from collections.abc import Callable, Mapping, MutableMapping

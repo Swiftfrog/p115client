@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __version__ = (0, 0, 1)
 __all__ = ["encrypt", "decrypt"]
 
@@ -87,4 +86,3 @@ def decrypt(cipher_data: str | Buffer, /) -> bytearray:
     key_l = gen_key(m[:16], 12)
     tmp = memoryview(xor(m[16:], key_l))[::-1]
     return xor(tmp, b"\x8d\xa5\xa5\x8d")
-

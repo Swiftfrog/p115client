@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = [
     "updatedb_life_iter", "updatedb_life", "updatedb_one", "updatedb_tree", 
     "updatedb", "iter_fs_event", 

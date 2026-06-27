@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["P115Recyclebin"]
 
 from collections.abc import AsyncIterator, Callable, Coroutine, Iterable, Iterator
@@ -394,4 +393,3 @@ class P115Recyclebin:
             request=self.async_request if async_ else self.request, 
             async_=async_, 
         ))
-

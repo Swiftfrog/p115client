@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __version__ = (0, 0, 5)
 __all__ = [
     "ALPHABET", "PREFIX_TO_TRANSTAB", "PREFIX_TO_TRANSTAB_REV", 
@@ -241,4 +240,3 @@ def to_pickcode(
             return id
         id = int(id)
     return id_to_pickcode(id, stable_point, prefix=prefix)
-

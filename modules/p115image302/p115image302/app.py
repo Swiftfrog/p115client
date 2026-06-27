@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
-__all__ = ["make_application"]
 
 from collections.abc import MutableMapping
 from string import ascii_letters, digits
@@ -130,4 +128,3 @@ if __name__ == "__main__":
         timeout_graceful_shutdown=1, 
         access_log=False, 
     )
-

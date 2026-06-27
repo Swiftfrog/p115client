@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["P115Client", "ExportDirStatus", "PushExtractProgress", "ExtractProgress"]
 
 import errno

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = [
     "attr_to_path", "get_id_from_db", "get_pickcode_from_db", "get_sha1_from_db", 
     "get_path_from_db", "get_ancestors_from_db", "get_attr_from_db", "get_children_from_db", 
@@ -113,4 +112,3 @@ def get_children_from_db(
     ls = list(map(normattr, P115QueryDB(con).iter_children(id)))
     ls.sort(key=lambda a: (1 - a["is_dir"], a["name"]))
     return ls
-

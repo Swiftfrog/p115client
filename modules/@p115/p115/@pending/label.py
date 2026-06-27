@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["P115LabelList"]
 
 from collections.abc import AsyncIterator, Callable, Coroutine, Iterator
@@ -617,4 +616,3 @@ class P115LabelList:
         return run_gen_step(gen_step, async_)
 
     set = edit
-

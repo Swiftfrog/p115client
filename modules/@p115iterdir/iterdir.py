@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["main"]
 __doc__ = "遍历并导出 115 目录信息"
 
@@ -342,4 +341,3 @@ parser.set_defaults(func=main)
 
 if __name__ == "__main__":
     main()
-

@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
-__all__ = ["make_application"]
 
 from collections.abc import Callable
 from errno import ENOENT
@@ -553,4 +551,3 @@ if __name__ == "__main__":
 # TODO: 增加参数 user_id、parent_id 和 refresh
 # TODO: 支持更换 cookies 以及更新 cookies
 # TODO: 支持获取图片（或者任意 <= 50 MB 的文件）的 cdn 链接
-

@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
-__all__ = ["make_application"]
 
 from asyncio import (
     create_task, get_running_loop, sleep as async_sleep, 

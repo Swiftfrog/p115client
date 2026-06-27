@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-__author__ = "ChenyangGao <https://chenyanggao.github.io>"
 __all__ = ["P115Offline", "P115OfflineClearEnum"]
 
 from asyncio import run
@@ -791,4 +790,3 @@ class P115Offline:
             resp["sha1"] = sha
             return resp
         return run_gen_step(gen_step, async_)
-
