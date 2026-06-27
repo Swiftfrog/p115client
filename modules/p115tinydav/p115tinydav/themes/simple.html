@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P115 TinyDAV</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6fbf7;
+      --panel: #ffffff;
+      --line: #d9eadf;
+      --line-strong: #b8dcc4;
+      --text: #163321;
+      --muted: #66806f;
+      --green: #178542;
+      --green-dark: #0f6731;
+      --green-soft: #e9f7ee;
+      --danger: #a24444;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--green);
+      color: #fff;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--green-dark);
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .button {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--green-dark);
+      border-radius: 7px;
+      padding: 8px 11px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 600;
+    }
+
+    .button:hover {
+      background: var(--green-soft);
+      border-color: var(--green);
+    }
+
+    .crumbs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 14px 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .crumbs a {
+      color: var(--green-dark);
+      font-weight: 600;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(26, 86, 47, 0.08);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--green-dark);
+      background: #f0f8f2;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr:hover {
+      background: #fbfefc;
+    }
+
+    .name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .name:hover {
+      color: var(--green);
+    }
+
+    .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--green-soft);
+      color: var(--green-dark);
+      flex: 0 0 auto;
+      font-size: 15px;
+    }
+
+    .filename {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .right {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .empty,
+    .error {
+      padding: 38px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 20px, 1120px);
+        padding-top: 18px;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      .actions {
+        justify-content: flex-start;
+        margin-top: 14px;
+      }
+
+      h1 {
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">115</div>
+        <div>
+          <h1>P115 TinyDAV</h1>
+          <div class="subtitle" id="current-path">Loading...</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="button" type="button" id="refresh">Refresh</button>
+        <a class="button" href="../" id="parent-link">Parent</a>
+      </div>
+    </header>
+
+    <nav class="crumbs" id="crumbs"></nav>
+
+    <section class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="right">Size</th>
+              <th class="right">Modified</th>
+            </tr>
+          </thead>
+          <tbody id="list">
+            <tr><td colspan="3" class="empty">Loading directory...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const list = document.getElementById("list");
+    const crumbs = document.getElementById("crumbs");
+    const currentPath = document.getElementById("current-path");
+    const parentLink = document.getElementById("parent-link");
+
+    function withFormatJson(url) {
+      const next = new URL(url, window.location.href);
+      next.searchParams.set("format", "json");
+      return next;
+    }
+
+    function encodePath(path) {
+      return path.split("/").map(encodeURIComponent).join("/");
+    }
+
+    function hrefForPath(path) {
+      const normalized = path === "/" ? "/" : encodePath(path);
+      return normalized.endsWith("/") ? normalized : normalized + "/";
+    }
+
+    function hrefForFile(path) {
+      return encodePath(path || "/");
+    }
+
+    function formatSize(size) {
+      if (!size) return "-";
+      const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+      let value = Number(size);
+      let index = 0;
+      while (value >= 1024 && index < units.length - 1) {
+        value /= 1024;
+        index += 1;
+      }
+      return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function formatTime(value) {
+      if (!value) return "-";
+      return new Date(Number(value) * 1000).toLocaleString();
+    }
+
+    function renderCrumbs(path) {
+      const clean = path || "/";
+      currentPath.textContent = clean;
+      crumbs.textContent = "";
+
+      const root = document.createElement("a");
+      root.href = "/";
+      root.textContent = "root";
+      crumbs.append(root);
+
+      const parts = clean.split("/").filter(Boolean);
+      let acc = "";
+      for (const part of parts) {
+        crumbs.append(" / ");
+        acc += "/" + part;
+        const link = document.createElement("a");
+        link.href = hrefForPath(acc);
+        link.textContent = part;
+        crumbs.append(link);
+      }
+
+      if (parts.length === 0) {
+        parentLink.href = "/";
+      } else {
+        const parent = "/" + parts.slice(0, -1).join("/");
+        parentLink.href = hrefForPath(parent || "/");
+      }
+    }
+
+    function rowFor(item) {
+      const tr = document.createElement("tr");
+
+      const nameTd = document.createElement("td");
+      const link = document.createElement("a");
+      link.className = "name";
+      link.href = item.is_dir ? hrefForPath(item.path) : hrefForFile(item.path);
+
+      const icon = document.createElement("span");
+      icon.className = "icon";
+      icon.textContent = item.is_dir ? "/" : ".";
+
+      const text = document.createElement("span");
+      text.className = "filename";
+      text.textContent = item.name || item.path || "/";
+      link.append(icon, text);
+      nameTd.append(link);
+
+      const sizeTd = document.createElement("td");
+      sizeTd.className = "right muted";
+      sizeTd.textContent = item.is_dir ? "-" : formatSize(item.size);
+
+      const timeTd = document.createElement("td");
+      timeTd.className = "right muted";
+      timeTd.textContent = formatTime(item.mtime);
+
+      tr.append(nameTd, sizeTd, timeTd);
+      return tr;
+    }
+
+    async function loadDirectory() {
+      list.innerHTML = '<tr><td colspan="3" class="empty">Loading directory...</td></tr>';
+      try {
+        const response = await fetch(withFormatJson(window.location.href), {
+          headers: { "accept": "application/json" },
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        renderCrumbs(data.path || window.location.pathname || "/");
+        const children = Array.isArray(data.children) ? data.children : [];
+        children.sort((a, b) => Number(b.is_dir) - Number(a.is_dir) || String(a.name).localeCompare(String(b.name)));
+        if (!children.length) {
+          list.innerHTML = '<tr><td colspan="3" class="empty">This directory is empty.</td></tr>';
+          return;
+        }
+        list.textContent = "";
+        for (const item of children) {
+          list.append(rowFor(item));
+        }
+      } catch (error) {
+        list.innerHTML = `<tr><td colspan="3" class="error">Failed to load directory: ${error.message}</td></tr>`;
+      }
+    }
+
+    document.getElementById("refresh").addEventListener("click", loadDirectory);
+    loadDirectory();
+  </script>
+</body>
+</html>

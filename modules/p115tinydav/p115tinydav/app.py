@@ -23,7 +23,8 @@ from blacksheep.server.responses import json
 from blacksheep_rich_log import middleware_access_log
 from cachedict import TTLDict
 from p115client import P115Client
-from p115client.tool import get_pic_url, P115QueryDB
+from p115client.tool import get_pic_url
+from p115client.tool.querydb import P115QueryDB
 from p115client.util import load_final_image
 from yarl import URL
 
@@ -38,7 +39,7 @@ with suppress(ImportError, AttributeError):
 from .db import get_con, init_db, updatedb_tree, updatedb_life
 
 
-theme = (Path(__file__).parent / "themes" / "crazy-universe.html").open("rb").read()
+theme = (Path(__file__).parent / "themes" / "simple.html").open("rb").read()
 
 
 def guess_mimetype(name: str, /) -> bytes:
@@ -298,7 +299,12 @@ def make_application(
         if attr["is_dir"]:
             if format == "json":
                 attr["ancestors"] = list(querydb.get_ancestors(id))
-                attr["children"] = list(querydb.iter_children(id))
+                children = list(querydb.iter_children(id))
+                if not children:
+                    await updatedb_tree(client, app.services.resolve(Connection), id, recursive=False)
+                    querydb = P115QueryDB(get_con(DB_READ_URI))
+                    children = list(querydb.iter_children(id))
+                attr["children"] = children
                 ensure_str_id(attr)
                 for subattr in attr["children"]:
                     subattr["path"] = joinpath(attr["path"], subattr["name"])

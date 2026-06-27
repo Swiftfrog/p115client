@@ -1,0 +1,19 @@
+services:
+  p115tinydav:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile.tinydav
+    image: p115tinydav:latest
+    container_name: p115tinydav
+    restart: unless-stopped
+    command:
+      - -H
+      - 0.0.0.0
+      - -P
+      - ${P115TINYDAV_PORT:-8000}
+    ports:
+      - "${P115TINYDAV_PORT:-8000}:${P115TINYDAV_PORT:-8000}"
+    volumes:
+      - ./data:/data
+    environment:
+      TZ: Asia/Shanghai

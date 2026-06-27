@@ -1,5 +1,5 @@
-# p115tinydav requires python >= 3.12
-FROM python:3.12-slim
+# p115tinydav requires python >= 3.13
+FROM python:3.13-slim
 
 LABEL maintainer="albert"
 LABEL description="A Docker image to run p115tinydav"
@@ -17,6 +17,8 @@ COPY modules/p115pickcode /app/modules/p115pickcode
 COPY modules/p115oss /app/modules/p115oss
 COPY modules/p115tinydav /app/modules/p115tinydav
 
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
 RUN pip install --no-cache-dir \
     /app/modules/p115cipher/ \
     /app/modules/p115pickcode/ \
@@ -28,7 +30,5 @@ RUN pip install --no-cache-dir \
 WORKDIR /data
 
 VOLUME ["/data"]
-EXPOSE 8000
 
 ENTRYPOINT ["p115tinydav"]
-CMD ["-H", "0.0.0.0", "-P", "8000"]

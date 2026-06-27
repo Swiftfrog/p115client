@@ -12,8 +12,9 @@ from asynctools import async_batched
 from p115client import P115Client
 from p115client.tool import (
     iterdir, iter_life_behavior_once, iter_nodes_using_event,
-    traverse_tree, P115QueryDB,
+    traverse_tree,
 )
+from p115client.tool.querydb import P115QueryDB
 from sqlitetools import execute, query, upsert_items, AutoCloseConnection
 
 
@@ -106,7 +107,7 @@ async def updatedb_tree(
     recursive: bool = True,
 ):
     if not recursive:
-        return updatedb_dir(client, con, cid)
+        return await updatedb_dir(client, con, cid)
     cid = client.to_id(cid)
     try:
         mtime = int(time())

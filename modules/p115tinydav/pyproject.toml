@@ -23,6 +23,7 @@ classifiers = [
 ]
 include = [
     "LICENSE",
+    "p115tinydav/themes/*",
 ]
 
 [tool.poetry.dependencies]
