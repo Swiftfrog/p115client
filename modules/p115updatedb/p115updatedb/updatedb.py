@@ -31,7 +31,7 @@ from p115client.tool.download import iter_download_nodes
 from p115client.tool.fs_files import iter_fs_files, iter_fs_files_threaded
 from p115client.tool.iterdir import iter_nodes_using_event
 from p115client.tool.life import iter_life_behavior, IGNORE_BEHAVIOR_TYPES
-from sqlitetools import execute, upsert_items, AutoCloseConnection
+from sqlitetools import execute, upsert_items
 
 from .query import (
     get_dir_count, has_id, iter_descendants_bfs, iter_existing_id, 
@@ -54,6 +54,11 @@ handler.setFormatter(logging.Formatter(
     "\x1b[0m\x1b[1;35m%(name)s\x1b[0m \x1b[5;31m➜\x1b[0m %(message)s"
 ))
 logger.addHandler(handler)
+
+
+class AutoCloseConnection(Connection):
+    def __del__(self, /):
+        self.close()
 
 
 def drop_fake_app_ver_request(request: None | Callable = None, /) -> None | Callable:

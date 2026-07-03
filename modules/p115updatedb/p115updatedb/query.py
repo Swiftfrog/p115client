@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from contextlib import contextmanager
 from csv import writer
 from datetime import datetime
 from errno import ENOENT, ENOTDIR
@@ -24,7 +25,7 @@ from typing import overload, Any, Final, Literal
 from iterutils import bfs_gen, group_collect
 from orjson import loads
 from posixpatht import escape, path_is_dir_form, splits
-from sqlitetools import find, query, transact
+from sqlitetools import find, query
 
 
 FIELDS: Final = (
@@ -35,6 +36,19 @@ EXTENDED_FIELDS: Final = (*FIELDS, "depth", "path", "posixpath", "ancestors")
 
 register_converter("DATETIME", lambda dt: datetime.fromisoformat(str(dt, "utf-8")))
 register_converter("JSON", loads)
+
+
+@contextmanager
+def transact(con: Connection | Cursor, /):
+    cur = con if isinstance(con, Cursor) else con.cursor()
+    db = cur.connection
+    try:
+        yield cur
+    except BaseException:
+        db.rollback()
+        raise
+    else:
+        db.commit()
 
 
 def get_dir_count(
