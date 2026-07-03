@@ -31,7 +31,7 @@ from p115client.tool.download import iter_download_nodes
 from p115client.tool.fs_files import iter_fs_files, iter_fs_files_threaded
 from p115client.tool.iterdir import iter_nodes_using_event
 from p115client.tool.life import iter_life_behavior, IGNORE_BEHAVIOR_TYPES
-from sqlitetools import execute, upsert_items
+from sqlitetools import execute, upsert_items as _upsert_items
 
 from .query import (
     get_dir_count, has_id, iter_descendants_bfs, iter_existing_id, 
@@ -59,6 +59,21 @@ logger.addHandler(handler)
 class AutoCloseConnection(Connection):
     def __del__(self, /):
         self.close()
+
+
+def upsert_items(
+    con: Connection | Cursor,
+    items,
+    /,
+    *args,
+    commit: bool = False,
+    **kwargs,
+):
+    if not isinstance(items, Mapping) and not items:
+        if commit:
+            (con.connection if isinstance(con, Cursor) else con).commit()
+        return con.execute("SELECT 1 WHERE 0")
+    return _upsert_items(con, items, *args, commit=commit, **kwargs)
 
 
 def drop_fake_app_ver_request(request: None | Callable = None, /) -> None | Callable:
