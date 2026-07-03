@@ -8,7 +8,7 @@ __all__ = [
 
 import logging
 
-from collections.abc import Iterator, Iterable, Mapping
+from collections.abc import Callable, Iterator, Iterable, Mapping
 from errno import EBUSY
 from math import inf, isnan, isinf
 from os import PathLike
@@ -54,6 +54,33 @@ handler.setFormatter(logging.Formatter(
     "\x1b[0m\x1b[1;35m%(name)s\x1b[0m \x1b[5;31m➜\x1b[0m %(message)s"
 ))
 logger.addHandler(handler)
+
+
+def drop_fake_app_ver_request(request: None | Callable = None, /) -> None | Callable:
+    """Wrap a request function and remove p115client's synthetic app_ver."""
+    if request is None:
+        try:
+            from urllib3_future_request import request
+        except ImportError:
+            return None
+    request = cast(Callable, request)
+
+    def request_without_fake_app_ver(*args, **kwargs):
+        params = kwargs.get("params")
+        if isinstance(params, dict) and params.get("app_ver") == "99.99.99.99":
+            params = params.copy()
+            params.pop("app_ver", None)
+            kwargs["params"] = params
+        return request(*args, **kwargs)
+
+    return request_without_fake_app_ver
+
+
+def make_compat_request_kwargs(request_kwargs: dict, /) -> dict:
+    request = drop_fake_app_ver_request(request_kwargs.get("request"))
+    if request is None:
+        return request_kwargs
+    return {**request_kwargs, "request": request}
 
 
 def initdb(con: Connection | Cursor, /, disable_event: bool = False) -> Cursor:
@@ -296,7 +323,7 @@ def diff_dir(
     if refresh or not ((dirlen := get_dir_count(con, id)) and dirlen["tree_file_count"]):
         future1 = run_as_thread(lambda: set(iter_descendants_bfs(con, id, fields="id")))
         future2 = run_as_thread(lambda: [{"id": a["id"], "parent_id": a["parent_id"], "name": a["name"], "is_dir": 1, "is_alive": 1} 
-                                        for a in iter_download_nodes(client, id, files=False, max_workers=None)])
+                                        for a in iter_download_nodes(client, id, files=False, max_workers=None, app="android", **request_kwargs)])
         if tree:
             _, ancestors, _, data_it = iterdir(client, id, count=count, show_dir=False, cooldown=0.5, **request_kwargs)
         else:
@@ -417,6 +444,7 @@ def updatedb_life_iter(
 
     :return: 迭代器，每当一个事件成功入数据库，就产出它
     """
+    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     for event in iter_life_behavior(
         client, 
@@ -556,6 +584,7 @@ def updatedb_one(
 
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
+    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     _, to_upsert, to_remove = diff_dir(con, client, id, refresh=refresh, count=count, **request_kwargs)
     upsert_items(con, to_upsert, extras={"_triggered": 0}, commit=True)
@@ -585,6 +614,7 @@ def updatedb_tree(
 
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
+    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     refresh, to_upsert, to_remove = diff_dir(con, client, id, count=count, refresh=refresh, tree=True, **request_kwargs)
     to_recall: list[dict] = []
@@ -663,6 +693,7 @@ def updatedb(
     :param disable_event: 是否关闭 event 表的数据收集
     :param request_kwargs: 其它 http 请求参数，会传给具体的请求函数，默认的是 httpx，可用参数 request 进行设置
     """
+    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile, disable_event=disable_event)
     id_to_dirnode: dict = {}
     def parse_top_iter(top: int | str | Iterable[int | str], /) -> Iterator[int]:
@@ -681,6 +712,7 @@ def updatedb(
                         ensure_file=False, 
                         app="android", 
                         id_to_dirnode=id_to_dirnode, 
+                        **request_kwargs, 
                     )
                 except FileNotFoundError:
                     if logger is not None:
