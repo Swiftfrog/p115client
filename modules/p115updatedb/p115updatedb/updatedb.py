@@ -9,6 +9,7 @@ __all__ = [
 import logging
 
 from collections.abc import Callable, Iterator, Iterable, Mapping
+from collections import deque
 from errno import EBUSY
 from math import inf, isnan, isinf
 from os import PathLike
@@ -236,6 +237,7 @@ def iterdir(
     page_size: int = 0, 
     count: int = -1, 
     show_dir: bool = True, 
+    app: str = "android",
     cooldown: None | int | float = None, 
     **request_kwargs, 
 ) -> tuple[int, list[dict], set[int], Iterator[dict]]:
@@ -278,7 +280,7 @@ def iterdir(
                 payload, 
                 page_size=page_size, 
                 count=count, 
-                app="android", 
+                app=app,
                 raise_for_changed_count=True, 
                 cooldown=cooldown, 
                 **request_kwargs, 
@@ -290,8 +292,9 @@ def iterdir(
                 first_page_size=first_page_size, 
                 page_size=page_size, 
                 count=count, 
-                app="android", 
+                app=app,
                 raise_for_changed_count=True, 
+                max_workers=0,
                 **request_kwargs, 
             )
         for n, resp in enumerate(it):
@@ -314,6 +317,92 @@ def iterdir(
     it = iterate()
     next(it)
     return count, ancestors, seen, it
+
+
+def iter_dir_nodes_via_files(
+    client: P115Client,
+    id: int = 0,
+    /,
+    cooldown: None | int | float = None,
+    app: str = "web",
+    **request_kwargs,
+) -> Iterator[dict]:
+    """Walk directory nodes with the ordinary files-list API.
+
+    This is slower than downfolders, but it uses the same /files path as the
+    file iterator and works when 115's downfolders endpoint is blocked with 405.
+    """
+    queue = deque((id,))
+    seen_dirs = {id}
+    while queue:
+        cid = queue.popleft()
+        _, _, _, data_it = iterdir(client, cid, show_dir=True, cooldown=cooldown, app=app, **request_kwargs)
+        for attr in data_it:
+            if not attr["is_dir"]:
+                continue
+            fid = cast(int, attr["id"])
+            if fid in seen_dirs:
+                continue
+            seen_dirs.add(fid)
+            queue.append(fid)
+            yield {
+                "id": fid,
+                "parent_id": int(attr["parent_id"]),
+                "name": attr["name"],
+                "is_dir": 1,
+                "is_alive": 1,
+            }
+
+
+def iter_dir_nodes(
+    client: P115Client,
+    id: int = 0,
+    /,
+    logger = logger,
+    **request_kwargs,
+) -> Iterator[dict]:
+    try:
+        attrs = list(iter_download_nodes(client, id, files=False, max_workers=None, app="android", **request_kwargs))
+    except Exception as e:
+        if getattr(e, "code", None) != 405:
+            raise
+        if logger is not None:
+            logger.warning(
+                "[\x1b[1;35mFALLBACK\x1b[0m] %s, downfolders returned 405, use fs files tree walk for directories",
+                id,
+            )
+        yield from iter_dir_nodes_via_files(client, id, **request_kwargs)
+    else:
+        yield from attrs
+
+
+def get_id_to_path_with_fallback(
+    client: P115Client,
+    path: str,
+    /,
+    id_to_dirnode: dict,
+    **request_kwargs,
+) -> int:
+    try:
+        return get_id_to_path(
+            client,
+            path,
+            ensure_file=False,
+            app="android",
+            id_to_dirnode=id_to_dirnode,
+            **request_kwargs,
+        )
+    except Exception as e:
+        if getattr(e, "code", None) != 405:
+            raise
+        return get_id_to_path(
+            client,
+            path,
+            ensure_file=False,
+            app="web",
+            id_to_dirnode=id_to_dirnode,
+            **request_kwargs,
+        )
 
 
 def diff_dir(
@@ -343,11 +432,11 @@ def diff_dir(
     if refresh or not ((dirlen := get_dir_count(con, id)) and dirlen["tree_file_count"]):
         future1 = run_as_thread(lambda: set(iter_descendants_bfs(con, id, fields="id")))
         future2 = run_as_thread(lambda: [{"id": a["id"], "parent_id": a["parent_id"], "name": a["name"], "is_dir": 1, "is_alive": 1} 
-                                        for a in iter_download_nodes(client, id, files=False, max_workers=None, app="android", **request_kwargs)])
+                                        for a in iter_dir_nodes(client, id, **request_kwargs)])
         if tree:
-            _, ancestors, _, data_it = iterdir(client, id, count=count, show_dir=False, cooldown=0.5, **request_kwargs)
+            _, ancestors, _, data_it = iterdir(client, id, count=count, show_dir=False, **request_kwargs)
         else:
-            _, ancestors, _, data_it = iterdir(client, id, count=count, cooldown=0.5, **request_kwargs)
+            _, ancestors, _, data_it = iterdir(client, id, count=count, **request_kwargs)
         try:
             upsert_list.extend(data_it)
         finally:
@@ -726,14 +815,7 @@ def updatedb(
                 yield int(top)
             else:
                 try:
-                    yield get_id_to_path(
-                        client, 
-                        top, 
-                        ensure_file=False, 
-                        app="android", 
-                        id_to_dirnode=id_to_dirnode, 
-                        **request_kwargs, 
-                    )
+                    yield get_id_to_path_with_fallback(client, top, id_to_dirnode, **request_kwargs)
                 except FileNotFoundError:
                     if logger is not None:
                         logger.exception("[\x1b[1;31mFAIL\x1b[0m] directory not found: %r", top)
@@ -761,6 +843,10 @@ def updatedb(
                     if logger is not None:
                         logger.info("[\x1b[1;37;43mSTAT\x1b[0m] \x1b[1m%d\x1b[0m, too big, since statistics timeout, consider the size as \x1b[1;3minf\x1b[0m", id)
                     return float("inf")
+                if getattr(e, "code", None) == 405:
+                    if logger is not None:
+                        logger.warning("[\x1b[1;35mFALLBACK\x1b[0m] %s, file count returned 405, pull tree without pre-count", cid)
+                    return -1
                 raise
     gen = bfs_gen(*top_ids)
     send = gen.send
