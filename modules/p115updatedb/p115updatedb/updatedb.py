@@ -362,7 +362,7 @@ def iter_dir_nodes(
     **request_kwargs,
 ) -> Iterator[dict]:
     try:
-        attrs = list(iter_download_nodes(client, id, files=False, max_workers=None, app="android", **request_kwargs))
+        attrs = list(iter_download_nodes(client, id, files=False, max_workers=None, app="chrome", **request_kwargs))
     except Exception as e:
         if getattr(e, "code", None) != 405:
             raise
