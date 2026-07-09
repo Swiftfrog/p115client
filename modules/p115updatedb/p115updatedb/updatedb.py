@@ -293,7 +293,7 @@ def iterdir(
 
 def iter_dir_nodes(
     client: P115Client,
-    id: int = 0,
+    id: int | Mapping = 0,
     /,
     logger = logger,
     **request_kwargs,
@@ -307,6 +307,7 @@ def diff_dir(
     id: int = 0, 
     /, 
     count: int = -1, 
+    pickcode: str = "",
     refresh: bool = False, 
     tree: bool = False, 
     **request_kwargs, 
@@ -325,10 +326,11 @@ def diff_dir(
     """
     upsert_list: list[dict] = []
     remove_list: list[int] = []
+    download_top = {"id": id, "pickcode": pickcode} if pickcode else id
     if refresh or not ((dirlen := get_dir_count(con, id)) and dirlen["tree_file_count"]):
         future1 = run_as_thread(lambda: set(iter_descendants_bfs(con, id, fields="id")))
         future2 = run_as_thread(lambda: [{"id": a["id"], "parent_id": a["parent_id"], "name": a["name"], "is_dir": 1, "is_alive": 1} 
-                                        for a in iter_dir_nodes(client, id, **request_kwargs)])
+                                        for a in iter_dir_nodes(client, download_top, **request_kwargs)])
         if tree:
             _, ancestors, _, data_it = iterdir(client, id, count=count, show_dir=False, **request_kwargs)
         else:
@@ -574,6 +576,7 @@ def updatedb_one(
     id: int = 0, 
     /, 
     count: int = -1, 
+    pickcode: str = "",
     refresh: bool = False, 
     **request_kwargs, 
 ) -> tuple[int, int]:
@@ -583,13 +586,14 @@ def updatedb_one(
     :param dbfile: 数据库文件路径，如果为 None，则自动确定
     :param id: 要拉取的目录 id
     :param count: 文件总数
+    :param pickcode: 目录的 pickcode
     :param refresh: 是否全量更新
     :param request_kwargs: 其它 http 请求参数，会传给具体的请求函数，默认的是 httpx，可用参数 request 进行设置
 
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
     client, con = _init_client(client, dbfile)
-    _, to_upsert, to_remove = diff_dir(con, client, id, refresh=refresh, count=count, **request_kwargs)
+    _, to_upsert, to_remove = diff_dir(con, client, id, refresh=refresh, count=count, pickcode=pickcode, **request_kwargs)
     upsert_items(con, to_upsert, extras={"_triggered": 0}, commit=True)
     kill_items(con, to_remove, commit=True)
     return len(to_upsert), len(to_remove)
@@ -601,6 +605,7 @@ def updatedb_tree(
     id: int = 0, 
     /, 
     count: int = -1, 
+    pickcode: str = "",
     no_dir_moved: bool = True, 
     refresh: bool = False, 
     **request_kwargs, 
@@ -611,6 +616,7 @@ def updatedb_tree(
     :param dbfile: 数据库文件路径，如果为 None，则自动确定
     :param id: 要拉取的顶层目录 id
     :param count: 文件总数
+    :param pickcode: 顶层目录的 pickcode
     :param no_dir_moved: 是否无目录被移动或改名，如果为 True，则拉取会快一些
     :param refresh: 是否全量更新
     :param request_kwargs: 其它 http 请求参数，会传给具体的请求函数，默认的是 httpx，可用参数 request 进行设置
@@ -618,7 +624,7 @@ def updatedb_tree(
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
     client, con = _init_client(client, dbfile)
-    refresh, to_upsert, to_remove = diff_dir(con, client, id, count=count, refresh=refresh, tree=True, **request_kwargs)
+    refresh, to_upsert, to_remove = diff_dir(con, client, id, count=count, pickcode=pickcode, refresh=refresh, tree=True, **request_kwargs)
     to_recall: list[dict] = []
     if not refresh and to_remove and not no_dir_moved:
         pairs = dict(iter_id_to_parent_id(con, to_remove))
@@ -697,6 +703,7 @@ def updatedb(
     """
     client, con = _init_client(client, dbfile, disable_event=disable_event)
     id_to_dirnode: dict = {}
+    top_id_to_pickcode: dict[int, str] = {}
     def parse_top_iter(top: int | str | Iterable[int | str], /) -> Iterator[int]:
         if isinstance(top, int):
             yield top
@@ -707,14 +714,20 @@ def updatedb(
                 yield int(top)
             else:
                 try:
-                    yield get_id_to_path(
+                    resolved = get_id_to_path(
                         client, 
                         top, 
                         ensure_file=False, 
                         app="android", 
+                        dont_use_getid=True,
                         id_to_dirnode=id_to_dirnode, 
                         **request_kwargs, 
                     )
+                    id = int(resolved)
+                    get = getattr(resolved, "get", None)
+                    if get is not None and (pickcode := get("pickcode")):
+                        top_id_to_pickcode[id] = pickcode
+                    yield id
                 except FileNotFoundError:
                     if logger is not None:
                         logger.exception("[\x1b[1;31mFAIL\x1b[0m] directory not found: %r", top)
@@ -778,8 +791,9 @@ def updatedb(
         start_time = time()
         try:
             logger.info(f"[\x1b[1;37;43mTELL\x1b[0m] \x1b[1m{id}\x1b[0m is running ...")
+            pickcode = top_id_to_pickcode.get(id, "")
             if need_to_split_tasks or not recursive:
-                upserted, removed = updatedb_one(client, con, id, refresh=refresh, **request_kwargs)
+                upserted, removed = updatedb_one(client, con, id, pickcode=pickcode, refresh=refresh, **request_kwargs)
             else:
                 if id and count < 0:
                     try:
@@ -798,6 +812,7 @@ def updatedb(
                     con,
                     id,
                     count=count,
+                    pickcode=pickcode,
                     refresh=refresh,
                     no_dir_moved=no_dir_moved,
                     **request_kwargs,
