@@ -8,8 +8,7 @@ __all__ = [
 
 import logging
 
-from collections.abc import Callable, Iterator, Iterable, Mapping
-from collections import deque
+from collections.abc import Iterator, Iterable, Mapping
 from errno import EBUSY
 from math import inf, isnan, isinf
 from os import PathLike
@@ -75,33 +74,6 @@ def upsert_items(
             (con.connection if isinstance(con, Cursor) else con).commit()
         return con.execute("SELECT 1 WHERE 0")
     return _upsert_items(con, items, *args, commit=commit, **kwargs)
-
-
-def drop_fake_app_ver_request(request: None | Callable = None, /) -> None | Callable:
-    """Wrap a request function and remove p115client's synthetic app_ver."""
-    if request is None:
-        try:
-            from urllib3_future_request import request
-        except ImportError:
-            return None
-    request = cast(Callable, request)
-
-    def request_without_fake_app_ver(*args, **kwargs):
-        params = kwargs.get("params")
-        if isinstance(params, dict) and params.get("app_ver") == "99.99.99.99":
-            params = params.copy()
-            params.pop("app_ver", None)
-            kwargs["params"] = params
-        return request(*args, **kwargs)
-
-    return request_without_fake_app_ver
-
-
-def make_compat_request_kwargs(request_kwargs: dict, /) -> dict:
-    request = drop_fake_app_ver_request(request_kwargs.get("request"))
-    if request is None:
-        return request_kwargs
-    return {**request_kwargs, "request": request}
 
 
 def initdb(con: Connection | Cursor, /, disable_event: bool = False) -> Cursor:
@@ -319,41 +291,6 @@ def iterdir(
     return count, ancestors, seen, it
 
 
-def iter_dir_nodes_via_files(
-    client: P115Client,
-    id: int = 0,
-    /,
-    cooldown: None | int | float = None,
-    app: str = "web",
-    **request_kwargs,
-) -> Iterator[dict]:
-    """Walk directory nodes with the ordinary files-list API.
-
-    This is slower than downfolders, but it uses the same /files path as the
-    file iterator and works when 115's downfolders endpoint is blocked with 405.
-    """
-    queue = deque((id,))
-    seen_dirs = {id}
-    while queue:
-        cid = queue.popleft()
-        _, _, _, data_it = iterdir(client, cid, show_dir=True, cooldown=cooldown, app=app, **request_kwargs)
-        for attr in data_it:
-            if not attr["is_dir"]:
-                continue
-            fid = cast(int, attr["id"])
-            if fid in seen_dirs:
-                continue
-            seen_dirs.add(fid)
-            queue.append(fid)
-            yield {
-                "id": fid,
-                "parent_id": int(attr["parent_id"]),
-                "name": attr["name"],
-                "is_dir": 1,
-                "is_alive": 1,
-            }
-
-
 def iter_dir_nodes(
     client: P115Client,
     id: int = 0,
@@ -361,48 +298,7 @@ def iter_dir_nodes(
     logger = logger,
     **request_kwargs,
 ) -> Iterator[dict]:
-    try:
-        attrs = list(iter_download_nodes(client, id, files=False, max_workers=None, app="chrome", **request_kwargs))
-    except Exception as e:
-        if getattr(e, "code", None) != 405:
-            raise
-        if logger is not None:
-            logger.warning(
-                "[\x1b[1;35mFALLBACK\x1b[0m] %s, downfolders returned 405, use fs files tree walk for directories",
-                id,
-            )
-        yield from iter_dir_nodes_via_files(client, id, **request_kwargs)
-    else:
-        yield from attrs
-
-
-def get_id_to_path_with_fallback(
-    client: P115Client,
-    path: str,
-    /,
-    id_to_dirnode: dict,
-    **request_kwargs,
-) -> int:
-    try:
-        return get_id_to_path(
-            client,
-            path,
-            ensure_file=False,
-            app="android",
-            id_to_dirnode=id_to_dirnode,
-            **request_kwargs,
-        )
-    except Exception as e:
-        if getattr(e, "code", None) != 405:
-            raise
-        return get_id_to_path(
-            client,
-            path,
-            ensure_file=False,
-            app="web",
-            id_to_dirnode=id_to_dirnode,
-            **request_kwargs,
-        )
+    yield from iter_download_nodes(client, id, files=False, max_workers=None, app="chrome", **request_kwargs)
 
 
 def diff_dir(
@@ -553,7 +449,6 @@ def updatedb_life_iter(
 
     :return: 迭代器，每当一个事件成功入数据库，就产出它
     """
-    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     for event in iter_life_behavior(
         client, 
@@ -693,7 +588,6 @@ def updatedb_one(
 
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
-    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     _, to_upsert, to_remove = diff_dir(con, client, id, refresh=refresh, count=count, **request_kwargs)
     upsert_items(con, to_upsert, extras={"_triggered": 0}, commit=True)
@@ -723,7 +617,6 @@ def updatedb_tree(
 
     :return: 2 元组，1) 已更替的数据列表，2) 已移除的 id 列表
     """
-    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile)
     refresh, to_upsert, to_remove = diff_dir(con, client, id, count=count, refresh=refresh, tree=True, **request_kwargs)
     to_recall: list[dict] = []
@@ -802,7 +695,6 @@ def updatedb(
     :param disable_event: 是否关闭 event 表的数据收集
     :param request_kwargs: 其它 http 请求参数，会传给具体的请求函数，默认的是 httpx，可用参数 request 进行设置
     """
-    request_kwargs = make_compat_request_kwargs(request_kwargs)
     client, con = _init_client(client, dbfile, disable_event=disable_event)
     id_to_dirnode: dict = {}
     def parse_top_iter(top: int | str | Iterable[int | str], /) -> Iterator[int]:
@@ -815,7 +707,14 @@ def updatedb(
                 yield int(top)
             else:
                 try:
-                    yield get_id_to_path_with_fallback(client, top, id_to_dirnode, **request_kwargs)
+                    yield get_id_to_path(
+                        client, 
+                        top, 
+                        ensure_file=False, 
+                        app="android", 
+                        id_to_dirnode=id_to_dirnode, 
+                        **request_kwargs, 
+                    )
                 except FileNotFoundError:
                     if logger is not None:
                         logger.exception("[\x1b[1;31mFAIL\x1b[0m] directory not found: %r", top)
@@ -883,10 +782,15 @@ def updatedb(
                 upserted, removed = updatedb_one(client, con, id, refresh=refresh, **request_kwargs)
             else:
                 if id and count < 0:
-                    resp = client.fs_file(id)
-                    check_response(resp)
-                    if int(resp["data"][0]["aid"]) != 1:
-                        raise FileNotFoundError
+                    try:
+                        resp = client.fs_file(id)
+                    except Exception as e:
+                        if getattr(e, "code", None) != 405:
+                            raise
+                    else:
+                        check_response(resp)
+                        if int(resp["data"][0]["aid"]) != 1:
+                            raise FileNotFoundError
                 # Preserve the preflight count so an unexpectedly empty tree
                 # enumeration cannot be silently accepted as a successful sync.
                 upserted, removed = updatedb_tree(

@@ -112,9 +112,6 @@ def get_request(
             "data" if method.upper() in ("POST", "PUT") else "params",
             payload,
         )
-    params = request_kwargs.get("params")
-    if isinstance(params, dict):
-        params.setdefault("app_ver", "99.99.99.99")
     headers = request_kwargs["headers"] = dict_key_to_lower_merge(headers or ())
     headers["referer"] = headers.get("referer") or str(URL(url).origin())
     if ecdh_encrypt:
@@ -128,22 +125,6 @@ def get_request(
     else:
         request_kwargs.setdefault("parse", json_parse)
     return request, request_kwargs
-
-
-def drop_fake_app_ver_request(request: None | Callable = None, /) -> Callable:
-    if request is None:
-        from urllib3_future_request import request
-    request = cast(Callable, request)
-
-    def request_without_fake_app_ver(*args, **kwargs):
-        params = kwargs.get("params")
-        if isinstance(params, dict) and params.get("app_ver") == "99.99.99.99":
-            params = params.copy()
-            params.pop("app_ver", None)
-            kwargs["params"] = params
-        return request(*args, **kwargs)
-
-    return request_without_fake_app_ver
 
 
 def md5_secret_password(password: None | int | str = "670b14728ad9902aecba32e22fa4f6bd", /) -> str:
@@ -8091,7 +8072,6 @@ class P115Client(P115OpenClient):
         if isinstance(payload, str):
             payload = {"pickcode": payload}
         payload = {"page": 1, "per_page": 5000, **payload}
-        request_kwargs["request"] = drop_fake_app_ver_request(request_kwargs.get("request"))
         return self.request(url=api, params=payload, async_=async_, **request_kwargs)
 
     @overload
