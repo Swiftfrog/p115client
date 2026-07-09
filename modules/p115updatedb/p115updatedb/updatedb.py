@@ -46,6 +46,9 @@ INIT_WITHOUT_EVENT_SQL: Final = cast(bytes, get_data("p115updatedb", "init-witho
 MTIME_BEHAVIOR_TYPES: Final = frozenset((1, 2, 14, 17, 18, 20))
 # NOTE: 需要 ctime 的 115 生活事件类型集
 CTIME_BEHAVIOR_TYPES: Final = frozenset((1, 2, 14, 17, 18))
+# NOTE: downfolders 接口限频封禁的等待时间（秒）。实测约 19 个快速请求触发封禁，
+#       固定持续约 6 分钟后自动解除，期间重试不会延长封禁，因此等待略超过 6 分钟再重试
+THROTTLE_405_COOLDOWN: Final = 410
 # NOTE: 初始化日志对象
 logger = logging.Logger("115-updatedb", level=logging.INFO)
 handler = logging.StreamHandler()
@@ -298,7 +301,9 @@ def iter_dir_nodes(
     logger = logger,
     **request_kwargs,
 ) -> Iterator[dict]:
-    yield from iter_download_nodes(client, id, files=False, max_workers=None, app="chrome", **request_kwargs)
+    # NOTE: max_workers=0 表示单工作者按页串行拉取。并发拉取会对 downfolders 接口
+    #       瞬间打出一波请求，容易触发 115 的限频封禁（HTTP 405，约 6 分钟）
+    yield from iter_download_nodes(client, id, files=False, max_workers=0, app="chrome", **request_kwargs)
 
 
 def diff_dir(
@@ -744,6 +749,7 @@ def updatedb(
         auto_splitting_statistics_timeout = None
     seen: set[int] = set()
     seen_add = seen.add
+    throttled_retried: set[int] = set()
     need_calc_size = recursive and auto_splitting_threshold > 0
     if need_calc_size:
         kwargs = {**request_kwargs, "timeout": auto_splitting_statistics_timeout}
@@ -828,6 +834,22 @@ def updatedb(
         except P115BusyOSError:
             if logger is not None:
                 logger.warning("[\x1b[1;35mREDO\x1b[0m] directory is busy updating: %s", id)
+            send(id)
+        except Exception as e:
+            # 115 对 downfolders 等接口限频：短时间过多请求会临时封禁（HTTP 405），
+            # 约 6 分钟后自动解除。每个目录只等待重试一次，再次 405 则照常抛出
+            if getattr(e, "code", None) != 405 or id in throttled_retried:
+                if logger is not None:
+                    logger.exception("[\x1b[1;31mFAIL\x1b[0m] %s", id)
+                raise
+            throttled_retried.add(id)
+            if logger is not None:
+                logger.warning(
+                    "[\x1b[1;35mREDO\x1b[0m] %s, throttled by server (HTTP 405), sleep %d s before retry",
+                    id,
+                    THROTTLE_405_COOLDOWN,
+                )
+            sleep(THROTTLE_405_COOLDOWN)
             send(id)
         except:
             if logger is not None:

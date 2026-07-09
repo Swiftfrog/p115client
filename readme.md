@@ -124,12 +124,25 @@ https://proapi.115.com/app/chrome/downfolders?pickcode=...&page=1&per_page=10
 
 The same request can fail with `HTTP 405` when `app_ver=99.99.99.99` is appended. `download_folders_app()` now wraps its request function and removes that synthetic `app_ver` for this endpoint.
 
+### `downfolders` Rate Limiting
+
+`HTTP 405` is also 115's throttle response for this endpoint, independent of request shape (measured 2026-07-09):
+
+- ~19 rapid requests within a few seconds trigger a temporary ban for the account/IP.
+- The ban lasts a fixed ~6 minutes and is not extended by further attempts.
+- During the ban, changing UA, params, or method still returns 405; `webapi.115.com/files` keeps working.
+
+Mitigations in `p115updatedb`:
+
+- `iter_dir_nodes` uses `max_workers=0` (lazy serial paging) instead of auto concurrency, so each directory no longer fires a burst of parallel `downfolders` requests.
+- `updatedb` retries a task once after a 405, sleeping `THROTTLE_405_COOLDOWN` (410 s) first; a second 405 for the same directory propagates.
+
 ### App Path
 
 For directory nodes, `p115updatedb` should use:
 
 ```python
-iter_download_nodes(client, id, files=False, max_workers=None, app="chrome", ...)
+iter_download_nodes(client, id, files=False, max_workers=0, app="chrome", ...)
 ```
 
 That maps to:
