@@ -33,9 +33,10 @@ from iterutils import (
     with_iter_next, Yield, YieldFrom, 
 )
 from p115oss import (
-    upload_file_init, oss_multipart_upload_init, oss_multipart_upload_complete, 
-    oss_multipart_upload_url, oss_multipart_part_iter, oss_multipart_upload_part_iter, 
+    upload_file_init, oss_multipart_upload_init, oss_multipart_upload_complete,
+    oss_multipart_upload_url, oss_multipart_part_iter, oss_multipart_upload_part_iter,
 )
+from p115oss.oss import oss_url
 from p115pickcode import to_id
 from yarl import URL
 
@@ -1129,7 +1130,9 @@ class P115MultipartUpload:
             if resp["reuse"]:
                 return resp
             data = resp["data"]
-            url = data["url"]
+            # NOTE: p115oss 0.1.x 起，upload_file_init 不再返回 "url"，
+            #       改为返回 "bucket" + "object"（key），故在此自行拼接。
+            url = oss_url(data["object"], bucket=data["bucket"])
             upload_id = yield oss_multipart_upload_init(
                 url, 
                 async_=async_, 
@@ -1286,17 +1289,19 @@ class P115MultipartUpload:
         :param async_: 是否异步
         :param request_kwargs: 其它请求参数
 
-        :return: 上传链接 和 请求头 的 2 元组
+        :return: 字典，包含 "method"、"url"、"headers" 和 "token"
         """
         def gen_step():
             from p115oss.api import _upload_token
             token = yield _upload_token(async_=async_)
-            result = yield oss_multipart_upload_url(
-                self.url, 
-                upload_id=self.upload_id, 
-                part_number=part_number, 
-                async_=async_, # type: ignore
-                **request_kwargs, 
+            # NOTE: p115oss 0.1.x 起，oss_multipart_upload_url 是纯函数：
+            #       不接受 async_ 和请求参数，且必须显式传入 token。
+            result = oss_multipart_upload_url(
+                self.url,
+                upload_id=self.upload_id,
+                token=token,
+                part_number=part_number,
+                **{k: request_kwargs[k] for k in ("bucket", "endpoint") if k in request_kwargs},
             )
             result["token"] = token
             return result
